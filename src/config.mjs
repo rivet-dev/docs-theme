@@ -50,8 +50,22 @@ export function buildStarlightConfig(config) {
 				]
 			: undefined);
 
-	const { head: _h, social: _s, customCss: _c, components: _cc, ...starlightRest } =
+	const { head: _h, social: _s, customCss: _c, components: _cc, plugins: userPlugins, ...starlightRest } =
 		config.starlight ?? {};
+
+	// Re-assert the porcelain Expressive Code config from a Starlight plugin that
+	// runs AFTER the consumer's plugins. Some plugins (notably starlight-openapi)
+	// call updateConfig({ expressiveCode: { ... } }) in their config:setup, which
+	// drops the theme's dark github-dark-default theme + #0a0a0a override. Adding
+	// this last gives the porcelain code-block styling the final word.
+	const expressiveCodePlugin = {
+		name: "@rivet-dev/docs-theme/expressive-code",
+		hooks: {
+			"config:setup"({ updateConfig }) {
+				updateConfig({ expressiveCode: { ...expressiveCode, removeUnusedThemes: false } });
+			},
+		},
+	};
 
 	return {
 		title: config.product,
@@ -71,5 +85,6 @@ export function buildStarlightConfig(config) {
 		...(head.length ? { head } : {}),
 		sidebar: config.sidebar,
 		...starlightRest,
+		plugins: [...(userPlugins ?? []), expressiveCodePlugin],
 	};
 }
