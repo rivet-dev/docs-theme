@@ -104,6 +104,12 @@ body {
 	background-color: rgba(46, 64, 52, 0.16);
 	color: inherit;
 }
+/* Code blocks are dark, so the light-prose selection wash above is invisible on
+   them. Give Expressive Code a clearly-visible light selection wash instead. */
+.expressive-code ::selection {
+	background-color: rgba(244, 241, 231, 0.25);
+	color: inherit;
+}
 
 /* ============================================================================
    Typography / prose
@@ -299,7 +305,9 @@ nav.sidebar .sidebar-content {
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.5rem;
-	padding: 0.4rem 0.5rem 0.4rem 0.75rem;
+	/* Match the leaf-link inset (8px block / 20px inline-start past the rail) so a
+	   group summary and the links it contains share a consistent text origin. */
+	padding: 8px 0.5rem 8px 20px;
 	border-inline-start: 2px solid var(--se-hairline-strong);
 	border-radius: 0;
 	transition: color 0.15s, border-color 0.15s;
@@ -309,6 +317,9 @@ nav.sidebar .sidebar-content {
 	border-inline-start-color: rgba(27, 25, 22, 0.3);
 }
 .sidebar-content .se-subgroup-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
 	color: var(--se-ink-soft);
 	font-size: 0.875rem;
 	font-weight: 400;
@@ -326,6 +337,29 @@ nav.sidebar .sidebar-content {
 	border-inline-start: none;
 	padding-inline-start: 0;
 	margin-inline-start: 0;
+}
+/* Sub-group children share the SAME 2px rail/left-border as every other sidebar
+   item — the rail stays perfectly aligned top to bottom. Only the CONTENT (icon +
+   text) indents one step per nesting level. We do that by adding inline-start
+   padding INSIDE the link/summary (past the rail), NOT on the <ul> (which would
+   drag the rail right with it). The <ul> itself is flush. */
+.sidebar-content .se-subgroup > ul {
+	padding-inline-start: 0;
+}
+/* Level 1: direct children of a sub-group. */
+.sidebar-content .se-subgroup > ul > li > a,
+.sidebar-content .se-subgroup > ul > li > .se-subgroup > summary {
+	padding-inline-start: calc(20px + 1rem);
+}
+/* Level 2: a sub-group nested inside a sub-group (e.g. Architecture ▸ Advanced). */
+.sidebar-content .se-subgroup > ul > li > .se-subgroup > ul > li > a,
+.sidebar-content .se-subgroup > ul > li > .se-subgroup > ul > li > .se-subgroup > summary {
+	padding-inline-start: calc(20px + 2rem);
+}
+/* Level 3. */
+.sidebar-content .se-subgroup > ul > li > .se-subgroup > ul > li > .se-subgroup > ul > li > a,
+.sidebar-content .se-subgroup > ul > li > .se-subgroup > ul > li > .se-subgroup > ul > li > .se-subgroup > summary {
+	padding-inline-start: calc(20px + 3rem);
 }
 /* Links */
 /* Rivet sidebar link: 14px/20px, 8px top + 20px left padding, 2px rail. The
@@ -481,9 +515,10 @@ mobile-starlight-toc .toggle {
 	width: 1.05rem;
 	height: 1.05rem;
 	font-size: 1.05rem;
-	/* Optically centre the icon on the first line of body text (line-height
-	   ~1.6) so the text doesn't read as sitting below the icon. */
-	margin-top: 0.2rem;
+	/* Top-align the icon with the top of the first line of body text: the
+	   content has line-height 1.6, so its first glyphs sit ~0.3rem (half the
+	   leading) below the row top. Match that so icon-top == text-top. */
+	margin-top: 0.3rem;
 }
 .starlight-aside__content {
 	line-height: 1.6;
@@ -494,6 +529,11 @@ mobile-starlight-toc .toggle {
 .starlight-aside__content {
 	grid-column: 2;
 	min-width: 0;
+	/* Zero the content box's own top margin (prose spacing leaks 8px onto it),
+	   so the first line of text aligns with the icon's nudged top. Zeroing only
+	   the first child (above) is not enough — the content section itself is
+	   margined. */
+	margin-top: 0;
 }
 .starlight-aside__content > :first-child {
 	margin-top: 0;
@@ -556,14 +596,29 @@ mobile-starlight-toc .toggle {
 .expressive-code .frame.is-terminal::after {
 	display: none !important;
 }
-.expressive-code .frame.is-terminal pre,
-.expressive-code .frame.is-editor pre {
+/* Header is hidden for every frame (above), so the <pre> is always the topmost
+   element — round all four corners regardless of frame type. Titled frames
+   (has-title) are neither is-terminal nor is-editor, so a type-scoped selector
+   would leave their top corners square. */
+.expressive-code .frame pre {
 	border-radius: 0.75rem;
 	padding-block: 0.9rem;
 }
 /* Match Rivet's code line-height (20px at 14px). */
 .expressive-code .ec-line {
 	line-height: 1.45;
+}
+/* The theme hides EC's title bar, but EC still offsets the copy button down by
+   the (now-collapsed) title-bar height, leaving it floating ~40px into the code.
+   Pin it to the top-right of the frame instead. */
+.expressive-code .copy {
+	inset-block-start: 0.5rem;
+	inset-block-end: auto;
+}
+/* Recolor EC's "Copied!" success tooltip from its default green to brand ink. */
+.expressive-code {
+	--ec-frm-tooltipSuccessBg: var(--se-ink);
+	--ec-frm-tooltipSuccessFg: var(--se-cream);
 }
 /* Copy-to-clipboard button: Rivet uses a clean borderless icon (no fill, no
    border) that brightens on hover. On our dark frame the icon is a muted cream
@@ -605,16 +660,16 @@ mobile-starlight-toc .toggle {
    inactive, ink active with an ink underline (not pine, which is reserved for
    the header section tabs).
    ============================================================================ */
-/* Rivet's tablist is an inline row (border only as wide as the tabs), no left
-   pad; tabs are 10px/16px; active = ink text + 2px ink underline. */
+/* Tab row: an inline row of underline tabs over a full-width divider between the
+   tabs and the content. The active tab's 2px underline sits on the divider (the
+   tab's negative margin pulls its border over the 1px rule). */
 .sl-markdown-content starlight-tabs .tablist-wrapper ul,
 .sl-markdown-content [role="tablist"] {
 	width: 100%;
 	padding-inline-start: 0;
+	padding-top: 0.4rem;
 	border-bottom: 1px solid var(--se-hairline);
 }
-/* The active tab's 2px indicator sits ON the list's 1px divider (one line, not
-   two) — Rivet's pattern. Negative margin pulls the tab border over the rule. */
 .sl-markdown-content [role="tab"] {
 	padding: 10px 16px;
 	margin-bottom: -1px;
@@ -631,13 +686,173 @@ mobile-starlight-toc .toggle {
 	border-bottom-color: var(--se-ink);
 	font-weight: 600; /* Rivet's active content tab is semibold */
 }
-/* Code sits right under the tabs (Rivet) — drop the panel + code-block top gap. */
+/* Generic tab groups (<Tabs>) keep the original Rivet styling: the code retains
+   its rounded frame and sits a little below the tab row. Code GROUPS that should
+   read as one connected editor opt in via `.code-group` (below). */
 .sl-markdown-content starlight-tabs [role="tabpanel"] {
+	margin-top: 1.5rem;
+}
+.sl-markdown-content starlight-tabs [role="tabpanel"] > :first-child {
 	margin-top: 0;
 }
 .sl-markdown-content starlight-tabs .expressive-code {
 	margin-top: 0.75rem;
 	margin-bottom: 0;
+}
+/* The markdown list-item margin leaks onto the tablist's <li>, lifting the tab
+   row's text + active underline above the list's bottom divider so the two read
+   as two separate lines. Zero it so the active-tab underline sits ON the divider
+   (Rivet's "one line, not two"). This is a generic tab-row fix, independent of
+   the code styling. */
+.sl-markdown-content starlight-tabs [role="tablist"] li {
+	margin-block: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Code groups (<CodeGroup>) — a connected multi-file editor with a LEFT
+   vertical file list and the selected file's code in the RIGHT pane (Rivet's
+   docs layout). A bordered, rounded container holds a ~160px file-list column
+   (Manrope labels, ink active highlight) beside the dark Expressive Code frame.
+   A single block falls through to the plain `.expressive-code` styling above.
+   ---------------------------------------------------------------------------- */
+.sl-markdown-content .code-group {
+	margin: 1.25rem 0;
+}
+/* Starlight's markdown "owl" rule adds margin-top to adjacent siblings. The
+   `not-content` class on the root already excludes our descendants, but reset
+   explicitly too so the two columns top-align and file-list buttons don't drift. */
+.sl-markdown-content .code-group :where(.code-group-body, .code-group-sidebar, .code-group-content, .code-group-item, .code-group-panel, .expressive-code) {
+	margin-top: 0;
+}
+.sl-markdown-content .code-group .code-group-body {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	gap: 0.75rem;
+	min-height: 0;
+}
+/* Left file list: a plain ~168px column of buttons. No container chrome — the
+   list sits directly on the page beside the rounded code pane (Rivet layout). */
+.sl-markdown-content .code-group .code-group-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 0.0625rem;
+	width: 168px;
+	flex-shrink: 0;
+	padding: 0;
+	overflow-y: auto;
+}
+/* File-list items: Manrope (var(--sl-font)), with a file-type icon; inactive =
+   faint ink, hover = ink on a faint wash, active = ink on a stronger wash. */
+.sl-markdown-content .code-group .code-group-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	padding: 0.3rem 0.6rem;
+	border: 0;
+	border-radius: 0.4rem;
+	background: transparent;
+	font-family: var(--sl-font);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.5;
+	text-align: left;
+	color: var(--se-ink-faint);
+	cursor: pointer;
+	transition:
+		color 0.15s,
+		background 0.15s;
+}
+.sl-markdown-content .code-group .code-group-item:hover {
+	color: var(--se-ink);
+	background: rgba(27, 25, 22, 0.05);
+}
+.sl-markdown-content .code-group .code-group-item.is-active {
+	color: var(--se-ink);
+	background: rgba(27, 25, 22, 0.08);
+}
+.sl-markdown-content .code-group .code-group-item-icon {
+	width: 0.875rem;
+	height: 0.875rem;
+	flex: none;
+	opacity: 0.8;
+}
+.sl-markdown-content .code-group .code-group-item-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* Right code pane fills the remaining width. */
+.sl-markdown-content .code-group .code-group-content {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+}
+.sl-markdown-content .code-group .code-group-panel {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+.sl-markdown-content .code-group .code-group-panel.hidden {
+	display: none;
+}
+/* The code frame owns its own rounded corners (there's no wrapping container)
+   so it reads as a normal standalone code block sitting beside the file list. */
+.sl-markdown-content .code-group .expressive-code {
+	margin: 0;
+	width: 100%;
+}
+.sl-markdown-content .code-group .expressive-code .frame {
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+.sl-markdown-content .code-group .expressive-code .frame pre {
+	border-radius: 0.5rem;
+}
+/* The file name already lives in the left list — hide Expressive Code's own
+   per-file title header so the pane has no duplicate tab / extra top chrome. */
+.sl-markdown-content .code-group .expressive-code figcaption.header {
+	display: none;
+}
+.sl-markdown-content .code-group .expressive-code .frame.has-title:not(.is-terminal) pre {
+	padding-top: 0;
+}
+/* Narrow viewports: stack the file list on top as a horizontal scroller. */
+@media (max-width: 600px) {
+	.sl-markdown-content .code-group .code-group-body {
+		flex-direction: column;
+		gap: 0;
+	}
+	.sl-markdown-content .code-group .code-group-sidebar {
+		flex-direction: row;
+		width: auto;
+		gap: 0.25rem;
+		overflow-x: auto;
+		border-bottom: 1px solid var(--se-hairline);
+	}
+	.sl-markdown-content .code-group .code-group-item {
+		width: auto;
+		flex-shrink: 0;
+	}
+}
+
+/* ============================================================================
+   Status badges ("Coming Soon", etc.) — clean neutral gray pill. The docs
+   repurpose Starlight's amber `caution` badge variant as a status label, so
+   override it to a subtle porcelain-gray pill instead of a warning colour.
+   ============================================================================ */
+.sl-badge.caution {
+	margin-left: 0.5rem; /* ml-2 */
+	padding: 0 6px; /* py-0 px-[6px] */
+	font-family: var(--sl-font); /* Manrope sans (Starlight badges default to mono) */
+	font-size: 10px; /* text-[10px] */
+	line-height: 20px; /* matches Rivet's rendered badge */
+	font-weight: 500; /* font-medium */
+	background: rgba(27, 25, 22, 0.06); /* bg-ink/[0.06] */
+	border: 1px solid rgba(27, 25, 22, 0.1); /* border-ink/10 */
+	color: var(--se-ink-soft); /* text-ink-soft */
+	border-radius: 4px; /* rounded-sm (Rivet config = 4px, not Tailwind default 2px) */
+	white-space: nowrap;
 }
 
 /* ============================================================================

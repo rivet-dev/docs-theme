@@ -79,10 +79,40 @@ Starlight component slot) for projects that need to diverge.
 
 ## Icon catalog
 
-Icon keys (`rocket`, `terminal`, `bot`, `code`, `server`, `puzzle`, `layers`,
-`hexagon`, `globe`, `cpu`, `fileCode`, `shield`, `folder`, `folderTree`,
-`network`, `package`, `scroll`, `gauge`, `split`, `box`, `book`, `check`,
-`gitCompare`, `dollar`, `blocks`, `lock`, `dot`) are defined in `src/icons.mjs`.
+Icons are backed by **native Font Awesome** (`@fortawesome/free-solid-svg-icons`,
+the free package — public npm, no token). `src/icons.mjs` maps each stable theme
+key to a Font Awesome glyph and exposes it as `{ w, d }` (intrinsic width + SVG
+path). Consumers reference an icon by key, unchanged:
+
+- a sidebar leaf via `sidebar[].attrs['data-icon']`,
+- a sidebar GROUP label via `sidebarGroupIcons` (e.g. `{ Agents: "bot" }`),
+- a landing card via `icon`.
+
+Available keys: `rocket`, `terminal`, `bot`, `code`, `server`, `puzzle`,
+`layers`, `hexagon`, `globe`, `cpu`, `fileCode`, `shield`, `folder`,
+`folderTree`, `network`, `package`, `box`, `blocks`, `book`, `scroll`, `gauge`,
+`split`, `check`, `gitCompare`, `dollar`, `lock`, `dot`, `info`, `lightbulb`,
+`scaleBalanced`, `messages`, `key`, `wrench`, `cloud`, `download`, `floppyDisk`,
+`clock`, `hardDrive`, `link`, `towerBroadcast`, `arrowsLeftRight`, `diagramNext`,
+`mailbox`, `database`, `zap`, `play`, `plus`.
+
+### Adding / swapping an icon
+
+Import any glyph from `@fortawesome/free-solid-svg-icons` and add it to the `FA`
+map in `src/icons.mjs`. To swap a key to a different glyph, just point it at a
+different import — consumer config keeps working because the key is the contract.
+
+### Using Font Awesome Pro / custom-kit icons
+
+Pro (`@fortawesome/pro-*-svg-icons`) and custom-kit (`@awesome.me/kit-*`) glyphs
+come from Font Awesome's own registry and need a Pro license. To pull them in:
+
+1. Set `FONTAWESOME_PACKAGE_TOKEN` to your Font Awesome Pro package token
+   (https://fontawesome.com/account → "Package Manager Tokens", or a kit token).
+   Never commit the token.
+2. Uncomment the registry lines in `.npmrc` (already wired to read the env var).
+3. Add the Pro/kit package to `dependencies` in `package.json`, `pnpm install`,
+   then import the glyph in `src/icons.mjs` exactly like the free ones.
 
 ## License
 

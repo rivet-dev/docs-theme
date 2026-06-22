@@ -53,6 +53,14 @@ export interface SiteConfig {
 	social?: { discord?: string; github?: string };
 	/** Sidebar tree, passed through to Starlight. */
 	sidebar: StarlightUserConfig["sidebar"];
+	/**
+	 * Optional icons for sidebar GROUP labels, keyed by the group's label.
+	 * Starlight drops `attrs` on group entries (only links keep them), so group
+	 * icons cannot ride `sidebar[].attrs`; declare them here instead. Values are
+	 * keys from the shared theme icon catalog (same set as a leaf's
+	 * `attrs['data-icon']`), e.g. `{ Agents: "bot" }`.
+	 */
+	sidebarGroupIcons?: Record<string, string>;
 	/** Docs landing hero + card grid (rendered by the shared DocsLanding). */
 	landing?: Landing;
 	/** Analytics. PostHog host is fixed to the shared Rivet instance. */

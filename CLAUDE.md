@@ -31,8 +31,9 @@ consumer repo. To change a style:
    // consumer package.json (at the root of its pnpm workspace)
    "pnpm": { "overrides": { "@rivet-dev/docs-theme": "link:/abs/path/to/docs-theme" } }
    ```
-   `pnpm install`; edits here now reflect on the consumer's next build. **Remove the
-   override before committing** — a consumer must commit `github:…#tag`, never a path.
+   `pnpm install`; edits here now reflect on the consumer's next build. You may keep
+   the override through local commits while iterating, but **remove it before
+   pushing** — a pushed consumer must use `github:…#tag`, never a path.
 3. **Release**: bump `version` in `package.json`, commit, `git tag vX.Y.Z`,
    `git push origin main --tags`. Consumers pin to a **tag**, never `#main`.
 4. **Update one consumer**: set its dep to `github:rivet-dev/docs-theme#vX.Y.Z`,

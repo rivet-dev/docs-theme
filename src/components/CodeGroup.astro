@@ -1,0 +1,202 @@
+---
+/**
+ * <CodeGroup> — a connected multi-file code group, purpose-built for groups of
+ * titled code blocks (e.g. server.ts / client.ts). This is intentionally
+ * DIFFERENT from Starlight's generic `<Tabs>`:
+ *
+ *   - A single code block renders plainly, with NO file list (a one-file group
+ *     is pointless).
+ *   - Multiple titled code blocks render as ONE connected editor with a LEFT
+ *     vertical file list (labels taken from each block's `title="…"`) and the
+ *     selected file's code in the RIGHT pane — Rivet's docs layout.
+ *
+ * Usage (in `.mdx`):
+ *
+ *   import CodeGroup from '@rivet-dev/docs-theme/components/CodeGroup.astro';
+ *
+ *   <CodeGroup>
+ *   ```ts title="server.ts"
+ *   // …
+ *   ```
+ *
+ *   ```ts title="client.ts"
+ *   // …
+ *   ```
+ *   </CodeGroup>
+ *
+ * Each fenced block's `title="…"` becomes its file-list label. A block without a
+ * title falls back to its language, then to "Code".
+ *
+ * Implementation: we render the slotted markdown (expressive-code blocks), split
+ * it into the individual top-level `<div class="expressive-code">` blocks, and
+ * emit a left file list + right code panes. A small self-contained inline script
+ * (registered once per page) handles click-to-switch by toggling the active
+ * state on the file items and the `hidden` class on the code panes.
+ */
+
+import { ICONS } from "../icons.mjs";
+
+const slotHtml = (await Astro.slots.render("default")) ?? "";
+
+/**
+ * Pick a file-type glyph from the file-list label's extension. Falls back to a
+ * generic file-code icon. Returns a `{ w, d }` glyph from the shared catalog.
+ */
+function iconForLabel(label) {
+	const ext = (label.match(/\.([a-z0-9]+)$/i)?.[1] || "").toLowerCase();
+	if (["sh", "bash", "zsh", "shell", "fish", "ps1"].includes(ext)) return ICONS.terminal;
+	if (["json", "jsonc", "yaml", "yml", "toml"].includes(ext)) return ICONS.fileCode;
+	return ICONS.fileCode;
+}
+
+/**
+ * Split the rendered slot HTML into the individual top-level code blocks. Each
+ * expressive-code block is emitted as `<div class="expressive-code">…</div>`;
+ * we walk the string tracking `<div …>` / `</div>` nesting so we capture each
+ * block as a depth-balanced unit (the inner markup also contains many `<div>`s).
+ */
+function extractCodeBlocks(html) {
+	const blocks = [];
+	const open = '<div class="expressive-code"';
+	let i = 0;
+	while (true) {
+		const start = html.indexOf(open, i);
+		if (start === -1) break;
+		// Walk forward from `start`, counting <div …> opens and </div> closes
+		// until the depth returns to zero — that span is one full code block.
+		let depth = 0;
+		let end = -1;
+		const re = /<div\b|<\/div>/g;
+		re.lastIndex = start;
+		let m;
+		while ((m = re.exec(html))) {
+			if (m[0] === "</div>") {
+				depth--;
+				if (depth === 0) {
+					end = m.index + m[0].length;
+					break;
+				}
+			} else {
+				depth++;
+			}
+		}
+		if (end === -1) {
+			// Malformed / no closing tag found; take the rest and stop.
+			blocks.push(html.slice(start));
+			break;
+		}
+		blocks.push(html.slice(start, end));
+		i = end;
+	}
+	return blocks;
+}
+
+/**
+ * Pull the file-list label from an expressive-code block. Expressive-code
+ * renders a `title="…"` as `<figcaption class="header"><span class="title">…`.
+ * Fall back to the `data-language` of the `<pre>`, then to "Code".
+ */
+function labelForBlock(blockHtml) {
+	const titleMatch = blockHtml.match(/<span class="title">([\s\S]*?)<\/span>/);
+	if (titleMatch) {
+		const text = titleMatch[1].replace(/<[^>]*>/g, "").trim();
+		if (text) return text;
+	}
+	const langMatch = blockHtml.match(/data-language="([^"]*)"/);
+	if (langMatch && langMatch[1]) return langMatch[1];
+	return "Code";
+}
+
+const blocks = extractCodeBlocks(slotHtml);
+// If splitting found nothing recognizable (e.g. the slot wasn't an
+// expressive-code group), fall back to rendering the slot verbatim.
+const isGroup = blocks.length > 1;
+
+// Stable-ish unique id base for this group. Multiple groups on a page must not
+// collide, so include a random suffix.
+const uid = `cg-${Math.random().toString(36).slice(2, 10)}`;
+
+const panels =
+	isGroup &&
+	blocks.map((html, idx) => {
+		const label = labelForBlock(html);
+		return {
+			html,
+			label,
+			icon: iconForLabel(label),
+			itemId: `${uid}-item-${idx}`,
+			panelId: `${uid}-panel-${idx}`,
+		};
+	});
+---
+
+{
+	isGroup ? (
+		<div class="code-group not-content" data-code-group>
+			<div class="code-group-body">
+				<div class="code-group-sidebar" role="tablist">
+					{panels.map((panel, idx) => (
+						<button
+							type="button"
+							role="tab"
+							class:list={["code-group-item", { "is-active": idx === 0 }]}
+							id={panel.itemId}
+							data-code-group-target={panel.panelId}
+							aria-selected={idx === 0 ? "true" : "false"}
+							onclick="window.__cgSwitch(this)"
+						>
+							<svg
+								class="code-group-item-icon"
+								viewBox={`0 0 ${panel.icon.w} 512`}
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path d={panel.icon.d} />
+							</svg>
+							<span class="code-group-item-label">{panel.label}</span>
+						</button>
+					))}
+				</div>
+				<div class="code-group-content">
+					{panels.map((panel, idx) => (
+						<div
+							id={panel.panelId}
+							class:list={["code-group-panel", { hidden: idx !== 0 }]}
+							role="tabpanel"
+							aria-labelledby={panel.itemId}
+						>
+							<Fragment set:html={panel.html} />
+						</div>
+					))}
+				</div>
+			</div>
+		</div>
+	) : (
+		<Fragment set:html={slotHtml} />
+	)
+}
+
+{/*
+  Click-to-switch for the left file list. Each file button calls window.__cgSwitch
+  directly via an inline onclick, and the handler is defined in an `is:inline`
+  script so it is emitted verbatim and runs immediately — no module hoisting or
+  view-transition timing to depend on. The guard makes re-emitted copies a no-op.
+  Avoid raw curly braces in text positions so MDX never parses this as JSX.
+*/}
+<script is:inline>
+	window.__cgSwitch =
+		window.__cgSwitch ||
+		function (item) {
+			var group = item.closest("[data-code-group]");
+			if (!group) return;
+			var targetId = item.getAttribute("data-code-group-target");
+			group.querySelectorAll(".code-group-item").forEach(function (el) {
+				var active = el === item;
+				el.classList.toggle("is-active", active);
+				el.setAttribute("aria-selected", active ? "true" : "false");
+			});
+			group.querySelectorAll(".code-group-panel").forEach(function (panel) {
+				panel.classList.toggle("hidden", panel.id !== targetId);
+			});
+		};
+</script>

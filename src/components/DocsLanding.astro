@@ -64,7 +64,11 @@ const hasHero = Astro.slots.has("hero");
 	.dl {
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
 		width: 100%;
+		/* Vertically center the hero + cards in the viewport (minus the fixed
+		   header and the content panel's own block padding). */
+		min-height: calc(100svh - var(--sl-nav-height, 4rem) - 7rem);
 	}
 	.dl-hero {
 		max-width: 36rem;

@@ -1,6 +1,6 @@
 {
   "name": "@rivet-dev/docs-theme",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Shared Starlight docs theme and framework for Rivet OSS projects.",
   "license": "MIT",
   "type": "module",
@@ -20,8 +20,11 @@
     "LICENSE",
     "README.md"
   ],
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.5.2"
+  },
   "peerDependencies": {
-    "astro": ">=5.0.0",
-    "@astrojs/starlight": ">=0.36.0"
+    "@astrojs/starlight": ">=0.36.0",
+    "astro": ">=5.0.0"
   }
 }

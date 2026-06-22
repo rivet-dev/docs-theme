@@ -34,6 +34,7 @@ function clientConfig(config) {
 		cta: config.cta ?? null,
 		social: config.social ?? {},
 		landing: config.landing ?? null,
+		sidebarGroupIcons: config.sidebarGroupIcons ?? {},
 	};
 }
 
@@ -80,3 +81,23 @@ export function docsTheme(starlight, config) {
 }
 
 export default docsTheme;
+
+/**
+ * Component re-exports.
+ *
+ * Astro components (`.astro`) cannot be imported through a `.mjs` module — they
+ * are compiled by the Astro/Vite pipeline, not Node's loader — so consumers
+ * import them directly via the package's `./components/*` subpath export:
+ *
+ *   import CodeGroup from "@rivet-dev/docs-theme/components/CodeGroup.astro";
+ *
+ * `<CodeGroup>` is the connected multi-file code group (e.g. server.ts /
+ * client.ts): wrap several titled code blocks and it renders them as one editor
+ * with a file/tab row (labels from each block's `title="…"`); a single block
+ * renders plainly with no tab bar. The path below is exported via the
+ * `"./components/*"` entry in package.json's `exports` map. This constant is the
+ * canonical, importable record of that public component path.
+ */
+export const components = {
+	CodeGroup: "@rivet-dev/docs-theme/components/CodeGroup.astro",
+};

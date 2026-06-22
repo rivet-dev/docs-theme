@@ -12,6 +12,7 @@
  */
 import { Badge, Icon } from "@astrojs/starlight/components";
 import { ICONS } from "../icons.mjs";
+import config from "virtual:rivet-docs/config";
 
 interface SidebarEntry {
 	type: "link" | "group";
@@ -37,9 +38,19 @@ function containsCurrent(items: SidebarEntry[]): boolean {
 	);
 }
 
+// An icon renders only when the page explicitly sets `data-icon` to a known
+// catalog key. No fallback glyph: an item without `data-icon` (e.g. everything
+// under Reference) shows NO icon at all, not a placeholder dot.
 const iconFor = (attrs?: Record<string, any>) => {
 	const key = attrs?.["data-icon"];
-	return (key && ICONS[key]) || ICONS.dot;
+	return key ? ICONS[key] : undefined;
+};
+
+// Group entries lose `attrs` in Starlight, so a collapsible sub-group's icon is
+// looked up by its label via SiteConfig.sidebarGroupIcons (no icon if unset).
+const groupIconFor = (label: string) => {
+	const key = (config as any).sidebarGroupIcons?.[label];
+	return key ? ICONS[key] : undefined;
 };
 ---
 
@@ -54,14 +65,23 @@ const iconFor = (attrs?: Record<string, any>) => {
 						class:list={[{ large: !nested }, entry.attrs?.class]}
 						{...entry.attrs}
 					>
-						<svg
-							class="se-sidebar-icon"
-							viewBox={`0 0 ${iconFor(entry.attrs).w} 512`}
-							fill="currentColor"
-							aria-hidden="true"
-						>
-							<path d={iconFor(entry.attrs).d} />
-						</svg>
+						{entry.attrs?.["data-icon-src"] ? (
+							<img
+								class="se-sidebar-icon se-sidebar-icon-img"
+								src={entry.attrs["data-icon-src"]}
+								alt=""
+								aria-hidden="true"
+							/>
+						) : iconFor(entry.attrs) ? (
+							<svg
+								class="se-sidebar-icon"
+								viewBox={`0 0 ${iconFor(entry.attrs).w} 512`}
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path d={iconFor(entry.attrs).d} />
+							</svg>
+						) : null}
 						<span>{entry.label}</span>
 						{entry.badge && (
 							<Badge variant={entry.badge.variant} class={entry.badge.class} text={entry.badge.text} />
@@ -73,7 +93,19 @@ const iconFor = (attrs?: Record<string, any>) => {
 					// matches Rivet's nested sidebar groups.
 					<details open={containsCurrent(entry.entries ?? [])} class="se-subgroup">
 						<summary>
-							<span class="se-subgroup-label">{entry.label}</span>
+							<span class="se-subgroup-label">
+								{groupIconFor(entry.label) && (
+									<svg
+										class="se-sidebar-icon"
+										viewBox={`0 0 ${groupIconFor(entry.label).w} 512`}
+										fill="currentColor"
+										aria-hidden="true"
+									>
+										<path d={groupIconFor(entry.label).d} />
+									</svg>
+								)}
+								<span>{entry.label}</span>
+							</span>
 							<Icon name="right-caret" class="caret" size="1rem" />
 						</summary>
 						<Astro.self sublist={entry.entries} nested />
