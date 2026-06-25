@@ -3,18 +3,21 @@
 import Typesense from "typesense";
 import { Button, Dialog, DialogPortal, Kbd, cn } from "@rivet-gg/components";
 import { useCallback, useEffect, useState } from "react";
+import config from "virtual:rivet-docs/config";
 
+// Search connection comes from the consumer's docs.config (config.search.typesense),
+// falling back to PUBLIC_TYPESENSE_* env vars (rivet's original mechanism).
+const ts = (config as any)?.search?.typesense ?? {};
 const TYPESENSE_HOST =
-	import.meta.env.PUBLIC_TYPESENSE_HOST ||
-	"3lsug6t152oxcjndp-1.a1.typesense.net";
-const TYPESENSE_PORT = Number(import.meta.env.PUBLIC_TYPESENSE_PORT) || 443;
+	ts.host || import.meta.env.PUBLIC_TYPESENSE_HOST || "";
+const TYPESENSE_PORT =
+	Number(ts.port ?? import.meta.env.PUBLIC_TYPESENSE_PORT) || 443;
 const TYPESENSE_PROTOCOL =
-	import.meta.env.PUBLIC_TYPESENSE_PROTOCOL || "https";
+	ts.protocol || import.meta.env.PUBLIC_TYPESENSE_PROTOCOL || "https";
 const TYPESENSE_SEARCH_API_KEY =
-	import.meta.env.PUBLIC_TYPESENSE_SEARCH_API_KEY ||
-	"pKb2bCyP3pHvB4H46bv6mi0t13zuhCTp";
+	ts.searchApiKey || import.meta.env.PUBLIC_TYPESENSE_SEARCH_API_KEY || "";
 const TYPESENSE_COLLECTION_NAME =
-	import.meta.env.PUBLIC_TYPESENSE_COLLECTION_NAME || "rivet-docs";
+	ts.collectionName || import.meta.env.PUBLIC_TYPESENSE_COLLECTION_NAME || "";
 
 const searchClient = new Typesense.Client({
 	nodes: [
