@@ -1,4 +1,4 @@
-import backdrop from "@/images/effects/backdrop.svg";
+import backdrop from "../images/effects/backdrop.svg";
 
 export function GridPattern({ width, height, ...props }) {
 	// let patternId = useId();

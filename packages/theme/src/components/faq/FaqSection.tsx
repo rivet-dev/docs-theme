@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import type { FaqItem } from '@/data/faqs/types';
+import type { FaqItem } from '../../data/faqs/types';
 
 // Animated disclosure accordion (single open at a time) with a smooth
 // height + fade expand, like a polished demo-page FAQ. Answers stay mounted

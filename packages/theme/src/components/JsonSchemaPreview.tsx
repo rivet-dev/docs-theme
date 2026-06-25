@@ -1,6 +1,6 @@
 // Renders JSON schema (draft 7)
 
-import { Foldable } from "@/components/FoldableSchema";
+import { Foldable } from "./FoldableSchema";
 import { cn } from "@rivet-gg/components";
 import type {
 	JSONSchema7,

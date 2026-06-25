@@ -1,4 +1,4 @@
-import { Tooltip } from "@/components/mdx";
+import { Tooltip } from "./mdx";
 import {
 	Icon,
 	faBars,

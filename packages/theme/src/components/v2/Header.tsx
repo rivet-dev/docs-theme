@@ -1,12 +1,12 @@
 "use client";
-import { usePathname } from "@/hooks/usePathname";
-import { ActiveLink } from "@/components/ActiveLink";
-import { Tree } from "@/components/DocsNavigation";
-import { NavigationStateProvider } from "@/providers/NavigationStateProvider";
-import type { SidebarItem } from "@/lib/sitemap";
-import logoUrl from "@/images/rivet-logos/icon-text-white.svg";
-import logoTextBlackUrl from "@/images/rivet-logos/icon-text-black.svg";
-import logoIconUrl from "@/images/rivet-logos/icon-white.svg";
+import { usePathname } from "../../hooks/usePathname";
+import { ActiveLink } from "../ActiveLink";
+import { Tree } from "../DocsNavigation";
+import { NavigationStateProvider } from "../../providers/NavigationStateProvider";
+import type { SidebarItem } from "../../lib/sitemap";
+import logoUrl from "../../images/rivet-logos/icon-text-white.svg";
+import logoTextBlackUrl from "../../images/rivet-logos/icon-text-black.svg";
+import logoIconUrl from "../../images/rivet-logos/icon-white.svg";
 import { cn } from "@rivet-gg/components";
 import { Header as RivetHeader } from "@rivet-gg/components/header";
 import { Icon, faDiscord } from "@rivet-gg/icons";
@@ -20,13 +20,13 @@ import {
 } from "@rivet-gg/components";
 import { faChevronDown } from "@rivet-gg/icons";
 import { ArrowRight } from "lucide-react";
-import actorsLogoUrl from "@/images/products/actors-logo.svg";
-import agentosLogoUrl from "@/images/products/agentos-logo.svg";
-import sandboxAgentLogoUrl from "@/images/products/sandbox-agent-logo.svg";
+import actorsLogoUrl from "../../images/products/actors-logo.svg";
+import agentosLogoUrl from "../../images/products/agentos-logo.svg";
+import sandboxAgentLogoUrl from "../../images/products/sandbox-agent-logo.svg";
 import { GitHubDropdown } from "./GitHubDropdown";
 import { HeaderSearch } from "./HeaderSearch";
 import { LogoContextMenu } from "./LogoContextMenu";
-import { DocsTabs } from "@/components/DocsTabs";
+import { DocsTabs } from "../DocsTabs";
 
 interface TextNavItemProps {
 	href: string;

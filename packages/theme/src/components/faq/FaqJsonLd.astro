@@ -10,8 +10,8 @@
 //   government and health sites. The value here is long-tail content and
 //   AI-answer extraction; the schema is nearly free since it derives from the
 //   same data module as the visible rendering.
-import { faqPageSchema, type FaqItem } from '@/data/faqs/types';
-import { jsonLdString } from '@/lib/jsonLd';
+import { faqPageSchema, type FaqItem } from '../../data/faqs/types';
+import { jsonLdString } from '../../lib/jsonLd';
 
 interface Props {
 	items: FaqItem[];

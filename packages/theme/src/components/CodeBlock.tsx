@@ -1,5 +1,5 @@
 import * as shiki from "shiki";
-import theme from "@/lib/textmate-code-theme";
+import theme from "../lib/textmate-code-theme";
 import { cn } from "@rivet-gg/components";
 
 const LANGS: shiki.BundledLanguage[] = [

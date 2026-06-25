@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Database, Cpu, Workflow, Clock, Wifi, Zap, Bot, Users, Timer, Boxes, Radio, MessageSquare, ArrowRight } from 'lucide-react';
 import { codeToHtml } from 'shiki';
 import { SECTION_H2_CLASS, SUBTITLE_CLASS } from '../typography';
-import heroTheme from '@/lib/agent-os-hero-code-theme';
+import heroTheme from '../../../lib/agent-os-hero-code-theme';
 
 const RivetIcon = ({ className }: { className?: string }) => (
   <svg width="16" height="16" viewBox="0 0 176 173" className={className}>

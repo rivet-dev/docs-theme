@@ -1,5 +1,5 @@
-import { Heading } from '@/components/Heading';
-import { SchemaPreview as Schema } from '@/components/SchemaPreview';
+import { Heading } from './Heading';
+import { SchemaPreview as Schema } from './SchemaPreview';
 import { Icon, faInfoCircle, faExclamationTriangle, faLightbulbOn } from '@rivet-gg/icons';
 
 // In Astro, we use regular anchor tags instead of Next.js Link
@@ -117,14 +117,14 @@ export const Steps = ({ className, ...props }) => (
   <BaseSteps className={`!border-ink/10 ${className ?? ''}`} {...props} />
 );
 // Use our local SSR-safe Tabs instead of the one from @rivet-gg/components/mdx
-export { Tab, Tabs } from '@/components/Tabs';
-export { Resource } from '@/components/Resources';
-export { Summary } from '@/components/Summary';
-export { Accordion, AccordionGroup } from '@/components/Accordion';
-export { Frame } from '@/components/Frame';
-export { Card, CardGroup } from '@/components/Card';
-export { ComputePricing } from '@/components/docs/ComputePricing';
-export { pre, code, CodeGroup, Code } from '@/components/v2/Code';
+export { Tab, Tabs } from './Tabs';
+export { Resource } from './Resources';
+export { Summary } from './Summary';
+export { Accordion, AccordionGroup } from './Accordion';
+export { Frame } from './Frame';
+export { Card, CardGroup } from './Card';
+export { ComputePricing } from './docs/ComputePricing';
+export { pre, code, CodeGroup, Code } from './v2/Code';
 
 // Simple Tooltip component for inline tooltips
 export const Tooltip = ({ tip, children }) => {

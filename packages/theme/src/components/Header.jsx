@@ -1,19 +1,19 @@
 "use client";
-import { usePathname } from "@/hooks/usePathname";
+import { usePathname } from "../hooks/usePathname";
 import { Popover, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { forwardRef } from "react";
 import { Fragment } from "react";
 
-import { Button } from "@/components/Button";
+import { Button } from "./Button";
 import {
 	MobileNavigation,
 	useIsInsideMobileNavigation,
-} from "@/components/MobileNavigation";
-import { useNavigation } from "@/hooks/useNavigation";
-import imgLogo from "@/images/rivet-logos/icon-cream.svg";
-import imgLogoText from "@/images/rivet-logos/icon-text-cream.svg";
+} from "./MobileNavigation";
+import { useNavigation } from "../hooks/useNavigation";
+import imgLogo from "../images/rivet-logos/icon-cream.svg";
+import imgLogoText from "../images/rivet-logos/icon-text-cream.svg";
 import {
 	Icon,
 	faCircle,

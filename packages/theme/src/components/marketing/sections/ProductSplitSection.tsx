@@ -3,7 +3,7 @@
 import { Database, Globe, Infinity, Layers, Wifi, GitBranch, ListOrdered, Clock, Shield, FolderOpen, Code, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SECTION_H2_CLASS, SUBTITLE_CLASS } from '../typography';
-import agentosLogoUrl from '@/images/products/agentos-logo.svg';
+import agentosLogoUrl from '../../../images/products/agentos-logo.svg';
 
 const actorFeatures = [
 	{

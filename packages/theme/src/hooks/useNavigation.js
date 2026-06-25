@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import routes from "@/generated/routes.json";
+import routes from "../generated/routes.json";
 
 function usePathname() {
 	const [pathname, setPathname] = useState("");

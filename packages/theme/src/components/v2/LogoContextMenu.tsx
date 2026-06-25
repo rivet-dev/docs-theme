@@ -9,7 +9,7 @@ import {
 } from "@rivet-gg/components";
 import { Icon, faCopy, faDownload } from "@rivet-gg/icons";
 
-import logoUrl from "@/images/rivet-logos/icon-text-white.svg";
+import logoUrl from "../../images/rivet-logos/icon-text-white.svg";
 
 interface LogoContextMenuProps {
 	children: React.ReactNode;

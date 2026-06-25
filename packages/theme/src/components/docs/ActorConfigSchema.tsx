@@ -1,4 +1,4 @@
-import { JsonSchemaPreview } from "@/components/JsonSchemaPreview";
+import { JsonSchemaPreview } from "../JsonSchemaPreview";
 import actorConfigSchema from "../../../../rivetkit-typescript/artifacts/actor-config.json";
 
 export function ActorConfigSchema() {

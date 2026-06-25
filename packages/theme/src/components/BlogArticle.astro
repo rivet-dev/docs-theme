@@ -1,12 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
-import { getPostImage } from '@/lib/postImage';
-import { ArticleSocials } from '@/components/ArticleSocials';
-import { Prose } from '@/components/Prose';
-import { formatTimestamp } from '@/lib/formatDate';
-import { CATEGORIES } from '@/lib/article';
+import { getPostImage } from '../lib/postImage';
+import { ArticleSocials } from './ArticleSocials';
+import { Prose } from './Prose';
+import { formatTimestamp } from '../lib/formatDate';
+import { CATEGORIES } from '../lib/article';
 import { Icon, faArrowLeft, faArrowRight } from '@rivet-gg/icons';
-import * as mdxComponents from '@/components/mdx';
+import * as mdxComponents from './mdx';
 
 interface Props {
 	// biome-ignore lint/suspicious/noExplicitAny: content collection entry

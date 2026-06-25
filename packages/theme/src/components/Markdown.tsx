@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
 
-import * as components from "@/components/mdx";
+import * as components from "./mdx";
 import type { ComponentProps } from "react";
 import { remarkPlugins } from "../mdx/remark";
 

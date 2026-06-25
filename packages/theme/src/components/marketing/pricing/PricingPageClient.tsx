@@ -10,11 +10,11 @@ import {
   MemoryStick,
   Clock
 } from 'lucide-react';
-import rivetLogoWhite from '@/images/rivet-logos/icon-white.svg';
-import imgYC from '@/images/logos/yc.svg';
-import imgA16z from '@/images/logos/a16z.svg';
-import { SECTION_H2_CLASS, SUBTITLE_CLASS } from '@/components/marketing/typography';
-import { InkPanel } from '@/components/marketing/editorial/InkPanel';
+import rivetLogoWhite from '../../../images/rivet-logos/icon-white.svg';
+import imgYC from '../../../images/logos/yc.svg';
+import imgA16z from '../../../images/logos/a16z.svg';
+import { SECTION_H2_CLASS, SUBTITLE_CLASS } from '../typography';
+import { InkPanel } from '../editorial/InkPanel';
 
 // --- Page Sections ---
 

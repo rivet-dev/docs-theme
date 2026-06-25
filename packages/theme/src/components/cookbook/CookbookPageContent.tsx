@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { TECHNOLOGIES, TAGS } from "@/data/templates/shared";
+import { TECHNOLOGIES, TAGS } from "../../data/templates/shared";
 import { CookbookCard, type CookbookPageCardData } from "./CookbookCard";
 
 export interface CookbookPageListItem extends CookbookPageCardData {

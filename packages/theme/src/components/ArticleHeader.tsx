@@ -1,5 +1,5 @@
-import type { ArticleInfo } from "@/lib/articles/metadata";
-import { formatTimestamp } from "@/lib/formatDate";
+import type { ArticleInfo } from "../lib/articles/metadata";
+import { formatTimestamp } from "../lib/formatDate";
 
 export function ArticleHeader({ title, date, author, images }: ArticleInfo) {
 	return (

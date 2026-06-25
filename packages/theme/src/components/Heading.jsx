@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@rivet-gg/components';
 
-import { Tag } from '@/components/Tag';
+import { Tag } from './Tag';
 import { Icon, faLink } from '@rivet-gg/icons';
 
 function Eyebrow({ tag, label }) {

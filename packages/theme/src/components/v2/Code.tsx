@@ -25,7 +25,7 @@ import {
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import escapeHTML from "escape-html";
 import { cloneElement, type ReactElement, type ReactNode } from "react";
-import { CopyCodeTrigger } from "@/components/v2/CopyCodeButton";
+import { CopyCodeTrigger } from "./CopyCodeButton";
 
 const languageNames: Record<string, string> = {
 	csharp: "C#",

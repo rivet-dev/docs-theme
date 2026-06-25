@@ -1,14 +1,14 @@
 ---
-import '@/styles/main.css';
+import '../styles/main.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { ViewTransitions } from 'astro:transitions';
-import { EmbedDetector } from '@/components/EmbedDetector';
-import { Footer } from '@/components/Footer';
-import { Providers } from '@/components/Providers';
+import { EmbedDetector } from '../components/EmbedDetector';
+import { Footer } from '../components/Footer';
+import { Providers } from '../components/Providers';
 import { TooltipProvider } from '@rivet-gg/components';
-import CopyCodeScript from '@/components/CopyCodeScript.astro';
-import TabsScript from '@/components/TabsScript.astro';
-import MermaidScript from '@/components/MermaidScript.astro';
+import CopyCodeScript from '../components/CopyCodeScript.astro';
+import TabsScript from '../components/TabsScript.astro';
+import MermaidScript from '../components/MermaidScript.astro';
 
 interface Props {
 	title: string;

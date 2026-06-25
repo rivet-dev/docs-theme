@@ -1,7 +1,7 @@
 import {
 	computePricing as defaultModel,
 	type ComputePricingModel,
-} from "@/data/compute-pricing";
+} from "../../data/compute-pricing";
 
 interface ComputePricingProps {
 	/** Override the pricing model. Defaults to the shared config. */

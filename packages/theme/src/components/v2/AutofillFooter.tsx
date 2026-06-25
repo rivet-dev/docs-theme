@@ -1,6 +1,6 @@
 "use client";
 
-import { useAutofillStore } from "@/stores/autofill-store";
+import { useAutofillStore } from "../../stores/autofill-store";
 import { useMemo } from "react";
 
 export function AutofillFooter() {

@@ -1,17 +1,17 @@
 import { Icon, faArrowRight, faRivet, faServer } from '@rivet-gg/icons';
 import type { ReactNode } from 'react';
-import { FaqList } from '@/components/faq/FaqSection';
-import { formatTimestamp } from '@/lib/formatDate';
-import { compareEntries, getCompareEntry } from '@/data/compare';
-import type { CompareEntry } from '@/data/compare/types';
-import { CatalogCard } from '@/components/marketing/editorial/CatalogCard';
-import { Spirograph } from '@/components/marketing/art/Spirograph';
+import { FaqList } from '../../faq/FaqSection';
+import { formatTimestamp } from '../../../lib/formatDate';
+import { compareEntries, getCompareEntry } from '../../../data/compare';
+import type { CompareEntry } from '../../../data/compare/types';
+import { CatalogCard } from '../editorial/CatalogCard';
+import { Spirograph } from '../art/Spirograph';
 import {
 	CAPTION_CLASS,
 	HERO_H1_CLASS,
 	SECTION_H2_CLASS,
 	SUBTITLE_CLASS,
-} from '@/components/marketing/typography';
+} from '../typography';
 import { ComparisonTable } from './ComparisonTable';
 
 // This component is server-rendered by Astro with no client directive, so it

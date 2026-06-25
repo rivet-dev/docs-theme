@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { Fragment, createContext, useContext } from "react";
 import { create } from "zustand";
 
-import { Header } from "@/components/Header";
-import { Navigation } from "@/components/Navigation";
+import { Header } from "./Header";
+import { Navigation } from "./Navigation";
 
 function MenuIcon(props) {
 	return (

@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { cloudApi } from "@/lib/cloud-api/client";
+import { cloudApi } from "../lib/cloud-api/client";
 import type {
 	CloudBootstrapResponse,
 	CloudNamespace,
 	CloudNamespaceToken,
 	CloudProject,
-} from "@/lib/cloud-api/types";
+} from "../lib/cloud-api/types";
 
 interface AutofillState {
 	// Data

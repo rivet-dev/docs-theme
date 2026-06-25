@@ -1,4 +1,4 @@
-import { ActiveLink, type ActiveLinkProps } from "@/components/ActiveLink";
+import { ActiveLink, type ActiveLinkProps } from "./ActiveLink";
 import { Button } from "@rivet-gg/components";
 
 interface ModulePageLinkProps<T> extends ActiveLinkProps<T> {}

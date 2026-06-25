@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ComparisonStatus } from '@/data/compare/types';
+import type { ComparisonStatus } from '../../../data/compare/types';
 
 // Printed-catalog status marks: a pine check for yes, a hollow circle for
 // partial, a faint dash for no, and a dotted circle for coming soon. Pure

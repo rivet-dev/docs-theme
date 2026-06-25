@@ -1,7 +1,7 @@
 "use client";
 import type { ReactNode, AnchorHTMLAttributes } from "react";
-import { normalizePath } from "@/lib/normalizePath";
-import { usePathname } from "@/hooks/usePathname";
+import { normalizePath } from "../lib/normalizePath";
+import { usePathname } from "../hooks/usePathname";
 
 export interface ActiveLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	isActive?: boolean;

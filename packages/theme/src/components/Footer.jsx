@@ -1,12 +1,12 @@
 "use client";
-import { usePathname } from "@/hooks/usePathname";
-import { Button } from "@/components/Button";
-import routes from "@/generated/routes.json";
+import { usePathname } from "../hooks/usePathname";
+import { Button } from "./Button";
+import routes from "../generated/routes.json";
 import clsx from "clsx";
 
-import imgLogo from "@/images/rivet-logos/icon-white.svg";
-import imgYC from "@/images/logos/yc.svg";
-import imgA16z from "@/images/logos/a16z.svg";
+import imgLogo from "../images/rivet-logos/icon-white.svg";
+import imgYC from "../images/logos/yc.svg";
+import imgA16z from "../images/logos/a16z.svg";
 import {
 	Icon,
 	faBluesky,

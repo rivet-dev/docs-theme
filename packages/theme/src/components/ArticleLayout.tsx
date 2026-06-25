@@ -1,8 +1,8 @@
-import { ArticleHeader } from "@/components/ArticleHeader";
-import { OtherArticlesList } from "@/components/OtherArticlesList";
-import { Prose } from "@/components/Prose";
-import { TableOfContents } from "@/components/TableOfContents";
-import type { ArticleInfo } from "@/lib/articles/metadata";
+import { ArticleHeader } from "./ArticleHeader";
+import { OtherArticlesList } from "./OtherArticlesList";
+import { Prose } from "./Prose";
+import { TableOfContents } from "./TableOfContents";
+import type { ArticleInfo } from "../lib/articles/metadata";
 import type { ReactNode } from "react";
 
 interface ArticleLayoutProps {

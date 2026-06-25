@@ -1,5 +1,5 @@
-import { Foldable } from "@/components/FoldableSchema";
-import { Markdown } from "@/components/Markdown";
+import { Foldable } from "./FoldableSchema";
+import { Markdown } from "./Markdown";
 import { cn } from "@rivet-gg/components";
 import type { ReactNode } from "react";
 

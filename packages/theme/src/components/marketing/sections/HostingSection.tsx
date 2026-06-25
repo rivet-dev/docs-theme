@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Package, Server, Check, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { deployOptions } from '@rivetkit/shared-data';
-import imgLogo from '@/images/rivet-logos/icon-white.svg';
+import imgLogo from '../../../images/rivet-logos/icon-white.svg';
 import { SECTION_H2_CLASS, SUBTITLE_CLASS } from '../typography';
 import { GLOW_PILL_CLASS, handleGlowPillMouseMove } from '../glowPill';
 

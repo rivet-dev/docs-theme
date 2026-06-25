@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "@/hooks/usePathname";
-import { findPageForHref } from "@/lib/sitemap";
-import { sitemap } from "@/sitemap/mod";
+import { usePathname } from "../hooks/usePathname";
+import { findPageForHref } from "../lib/sitemap";
+import { sitemap } from "../sitemap/mod";
 import { cn } from "@rivet-gg/components";
 
 export function DocsTabs({

@@ -1,7 +1,7 @@
 "use client";
 
-import { useNavigation } from "@/hooks/useNavigation";
-import { remToPx } from "@/lib/remToPx";
+import { useNavigation } from "../hooks/useNavigation";
+import { remToPx } from "../lib/remToPx";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useCallback, useRef, useState } from "react";

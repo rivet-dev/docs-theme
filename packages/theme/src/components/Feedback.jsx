@@ -1,5 +1,5 @@
-import { Button } from "@/components/Button";
-import { RainbowBar } from "@/components/RainbowBar";
+import { Button } from "./Button";
+import { RainbowBar } from "./RainbowBar";
 import { Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { faGithub } from "@rivet-gg/icons";

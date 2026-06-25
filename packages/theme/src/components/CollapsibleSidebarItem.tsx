@@ -1,13 +1,13 @@
 "use client";
 
-import { usePathname } from "@/hooks/usePathname";
-import type { SidebarItem, SidebarSection } from "@/lib/sitemap";
+import { usePathname } from "../hooks/usePathname";
+import type { SidebarItem, SidebarSection } from "../lib/sitemap";
 import { cn } from "@rivet-gg/components";
 import { Icon, faChevronDown } from "@rivet-gg/icons";
 import { motion } from "framer-motion";
 import { type ReactNode, useMemo, useEffect, useState, useRef } from "react";
-import { normalizePath } from "@/lib/normalizePath";
-import { useNavigationState } from "@/providers/NavigationStateProvider";
+import { normalizePath } from "../lib/normalizePath";
+import { useNavigationState } from "../providers/NavigationStateProvider";
 
 interface CollapsibleSidebarItemProps {
 	item: SidebarSection;

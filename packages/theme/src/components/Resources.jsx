@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Heading } from "@/components/Heading";
+import { Heading } from "./Heading";
 import { Icon } from "@rivet-gg/icons";
 
 import { Button, cn } from "@rivet-gg/components";

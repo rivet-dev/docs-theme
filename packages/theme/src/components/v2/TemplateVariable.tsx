@@ -13,7 +13,7 @@ import {
 } from "@rivet-gg/components";
 import { faRightToBracket, Icon } from "@rivet-gg/icons";
 import { useEffect, useMemo, useState } from "react";
-import { useAutofillStore } from "@/stores/autofill-store";
+import { useAutofillStore } from "../../stores/autofill-store";
 
 interface TemplateVariableProps {
 	variable: string;

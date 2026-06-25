@@ -1,5 +1,5 @@
 "use client";
-import { getSiteUrl } from "@/lib/siteUrl";
+import { getSiteUrl } from "../lib/siteUrl";
 import { Icon, faRedditAlien, faRss, faXTwitter } from "@rivet-gg/icons";
 import { useState, useEffect } from "react";
 

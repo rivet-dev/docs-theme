@@ -1,4 +1,4 @@
-import { CardGroup, Card } from "@/components/Card";
+import { CardGroup, Card } from "../Card";
 import { deployOptions } from "@rivetkit/shared-data";
 
 export function Hosting() {

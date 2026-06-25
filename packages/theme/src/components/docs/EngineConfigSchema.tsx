@@ -1,4 +1,4 @@
-import { JsonSchemaPreview } from "@/components/JsonSchemaPreview";
+import { JsonSchemaPreview } from "../JsonSchemaPreview";
 import engineConfigSchema from "../../../../engine/artifacts/config-schema.json";
 
 export function EngineConfigSchema() {

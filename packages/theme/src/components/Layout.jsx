@@ -1,12 +1,12 @@
 import clsx from "clsx";
 
-import { Feedback } from "@/components/Feedback";
-import { Footer, PageNextPrevious } from "@/components/Footer";
-import { HeroPattern } from "@/components/HeroPattern";
-import { Navigation } from "@/components/Navigation";
-import { Prose } from "@/components/Prose";
-import { TableOfContents } from "@/components/TableOfContents";
-import { Header } from "@/components/v2/Header";
+import { Feedback } from "./Feedback";
+import { Footer, PageNextPrevious } from "./Footer";
+import { HeroPattern } from "./HeroPattern";
+import { Navigation } from "./Navigation";
+import { Prose } from "./Prose";
+import { TableOfContents } from "./TableOfContents";
+import { Header } from "./v2/Header";
 
 export function Layout({
 	navigation,

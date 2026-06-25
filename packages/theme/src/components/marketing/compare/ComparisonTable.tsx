@@ -1,7 +1,7 @@
 import { Icon, faRivet } from '@rivet-gg/icons';
 import React from 'react';
 import type { IconProp } from '@rivet-gg/icons';
-import type { FeatureGroup } from '@/data/compare/types';
+import type { FeatureGroup } from '../../../data/compare/types';
 import { FeatureStatus } from './FeatureStatus';
 
 interface ComparisonTableProps {

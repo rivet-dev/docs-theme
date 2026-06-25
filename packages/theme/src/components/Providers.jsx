@@ -1,6 +1,6 @@
 "use client";
-import { useMobileNavigationStore } from "@/components/MobileNavigation";
-import { NavigationStateProvider } from "@/providers/NavigationStateProvider";
+import { useMobileNavigationStore } from "./MobileNavigation";
+import { NavigationStateProvider } from "../providers/NavigationStateProvider";
 import { Toaster, toast } from "@rivet-gg/components";
 import { Suspense, useEffect, useState } from "react";
 

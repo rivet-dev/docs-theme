@@ -11,7 +11,7 @@
 // } from "react";
 // import { create } from "zustand";
 //
-// import { Tag } from "@/components/Tag";
+// import { Tag } from "./Tag";
 //
 // const languageNames = {
 // 	csharp: "C#",

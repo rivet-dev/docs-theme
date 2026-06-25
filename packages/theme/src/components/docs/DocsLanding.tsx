@@ -1,5 +1,5 @@
 import { Icon } from "@rivet-gg/icons";
-import actorsLogo from "@/images/products/actors-logo.svg";
+import actorsLogo from "../../images/products/actors-logo.svg";
 
 export interface DocsLandingItem {
 	title: string;

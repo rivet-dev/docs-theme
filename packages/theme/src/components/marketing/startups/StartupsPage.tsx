@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Check, ArrowRight, ChevronDown } from 'lucide-react';
-import imgYC from '@/images/logos/yc.svg';
-import imgA16z from '@/images/logos/a16z.svg';
+import imgYC from '../../../images/logos/yc.svg';
+import imgA16z from '../../../images/logos/a16z.svg';
 
 const StartupImageCycler = ({ images }: { images: { src: string; alt: string; mobileObjectPosition?: string }[] }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);

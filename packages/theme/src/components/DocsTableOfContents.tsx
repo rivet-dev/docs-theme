@@ -1,6 +1,6 @@
 "use client";
 
-import { remToPx } from "@/lib/remToPx";
+import { remToPx } from "../lib/remToPx";
 import { cn } from "@rivet-gg/components";
 import { motion } from "framer-motion";
 import { useCallback, useRef, useState } from "react";

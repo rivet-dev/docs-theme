@@ -1,4 +1,4 @@
-import { JsonSchemaPreview } from "@/components/JsonSchemaPreview";
+import { JsonSchemaPreview } from "../JsonSchemaPreview";
 import registryConfigSchema from "../../../../rivetkit-typescript/artifacts/registry-config.json";
 
 export function RegistryConfigSchema() {

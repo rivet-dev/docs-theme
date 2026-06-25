@@ -1,15 +1,15 @@
 "use client";
-import { usePathname } from "@/hooks/usePathname";
-import routes from "@/generated/routes.json";
+import { usePathname } from "../hooks/usePathname";
+import routes from "../generated/routes.json";
 import { faBooks, faCoin, faNewspaper } from "@rivet-gg/icons";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 
-import { Button } from "@/components/Button";
-import { useIsInsideMobileNavigation } from "@/components/MobileNavigation";
-import { ActiveSectionMarker } from "@/components/TableOfContents";
-import { Tag } from "@/components/Tag";
-import { normalizePath } from "@/lib/normalizePath";
+import { Button } from "./Button";
+import { useIsInsideMobileNavigation } from "./MobileNavigation";
+import { ActiveSectionMarker } from "./TableOfContents";
+import { Tag } from "./Tag";
+import { normalizePath } from "../lib/normalizePath";
 
 function TopLevelNavItem({ href, target, children }) {
 	return (

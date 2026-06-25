@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content';
-import { AUTHORS } from '@/lib/article';
+import { AUTHORS } from '../lib/article';
 
 interface OtherArticlesListProps {
 	currentSlug: string;

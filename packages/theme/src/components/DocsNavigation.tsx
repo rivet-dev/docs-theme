@@ -1,8 +1,8 @@
-import { ActiveLink } from "@/components/ActiveLink";
-import { CollapsibleSidebarItem } from "@/components/CollapsibleSidebarItem";
-import { NavigationStateProvider } from "@/providers/NavigationStateProvider";
-import routes from "@/generated/routes.json";
-import type { SidebarItem } from "@/lib/sitemap";
+import { ActiveLink } from "./ActiveLink";
+import { CollapsibleSidebarItem } from "./CollapsibleSidebarItem";
+import { NavigationStateProvider } from "../providers/NavigationStateProvider";
+import routes from "../generated/routes.json";
+import type { SidebarItem } from "../lib/sitemap";
 import { cn } from "@rivet-gg/components";
 import { Icon, faArrowUpRight } from "@rivet-gg/icons";
 import clsx from "clsx";

@@ -1,5 +1,5 @@
 import * as shiki from "shiki";
-import heroTheme from "@/lib/agent-os-hero-code-theme";
+import heroTheme from "./agent-os-hero-code-theme";
 
 const LANGS: shiki.BundledLanguage[] = [
 	"bash",

@@ -1,4 +1,4 @@
-import apiData from "@/generated/apiPages.json" assert { type: "json" };
+import apiData from "../generated/apiPages.json" assert { type: "json" };
 
 import {
 	faActorsBorderless,
@@ -73,8 +73,8 @@ import {
     faSupabase,
 } from "@rivet-gg/icons";
 import { deployOptions, type DeployOption } from "@rivetkit/shared-data";
-import nextjs from "@/images/vendors/next-js.svg";
-import type { SidebarItem, Sitemap } from "@/lib/sitemap";
+import nextjs from "../images/vendors/next-js.svg";
+import type { SidebarItem, Sitemap } from "../lib/sitemap";
 
 const deploySidebarPages: SidebarItem[] = deployOptions.map(
 	({ displayName: title, href, icon, badge }) => ({
