@@ -123,7 +123,6 @@ export { Summary } from './Summary';
 export { Accordion, AccordionGroup } from './Accordion';
 export { Frame } from './Frame';
 export { Card, CardGroup } from './Card';
-export { ComputePricing } from './docs/ComputePricing';
 export { pre, code, CodeGroup, Code } from './v2/Code';
 
 // Simple Tooltip component for inline tooltips

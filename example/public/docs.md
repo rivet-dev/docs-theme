@@ -15,3 +15,5 @@ console.log(greeting);
 ## A second heading
 
 Some prose to confirm headings get IDs and the table of contents is produced.
+
+This callout is rendered by the `<Note>` component from the rivet MDX map — no import needed.
