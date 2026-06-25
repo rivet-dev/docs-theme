@@ -1,5 +1,9 @@
 {
   "pages": {
+    "/docs/guide": {
+      "title": "A Guide",
+      "description": "Second page to exercise the sidebar tree."
+    },
     "/docs": {
       "title": "Hello World",
       "description": "First page rendered through the de-Starlighted docs-theme pipeline."

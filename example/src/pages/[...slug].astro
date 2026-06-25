@@ -1,6 +1,9 @@
 ---
 import DocsLayout from "@rivet-dev/docs-theme/layouts/DocsLayout.astro";
+import { DocsNavigation } from "@rivet-dev/docs-theme/components/DocsNavigation";
+import { findActiveTab } from "@rivet-dev/docs-theme/sitemap";
 import * as mdxComponents from "@rivet-dev/docs-theme/components/mdx.jsx";
+import config from "virtual:rivet-docs/config";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -13,9 +16,19 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const pathname = Astro.url.pathname;
+const found = findActiveTab(pathname, config.sitemap ?? []);
+const sidebar = found?.tab?.sidebar ?? [];
 ---
 
-<DocsLayout title={entry.data.title} description={entry.data.description}>
+<DocsLayout title={entry.data.title} description={entry.data.description} sidebar={sidebar}>
+  <DocsNavigation
+    sidebar={sidebar}
+    tabKey={found?.tab?.title}
+    client:load
+    transition:persist="docs-sidebar"
+  />
   <article class="prose mx-auto max-w-3xl px-6 py-10" id="main-content">
     <h1>{entry.data.title}</h1>
     <Content components={mdxComponents} />

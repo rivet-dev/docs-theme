@@ -8,6 +8,20 @@ const siteConfig = {
   siteUrl: "https://example.com",
   topNav: [{ label: "Docs", href: "/", match: "/" }],
   tabs: [{ label: "Documentation", href: "/", match: "/" }],
+  sitemap: [
+    {
+      title: "Documentation",
+      href: "/",
+      sidebar: [
+        { title: "Hello World", href: "/" },
+        {
+          title: "Guides",
+          collapsible: true,
+          pages: [{ title: "A Guide", href: "/guide" }],
+        },
+      ],
+    },
+  ],
   cta: { label: "Get Started", href: "/" },
   social: { github: "https://github.com/rivet-dev" },
   footer: {
