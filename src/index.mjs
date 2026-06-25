@@ -31,6 +31,7 @@ function clientConfig(config) {
 		repo: config.repo ?? null,
 		branch: config.branch ?? "main",
 		topNav: config.topNav ?? null,
+		tabs: config.tabs ?? null,
 		cta: config.cta ?? null,
 		social: config.social ?? {},
 		landing: config.landing ?? null,

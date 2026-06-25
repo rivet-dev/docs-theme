@@ -10,6 +10,20 @@ export interface NavItem {
 	match?: string;
 }
 
+export interface SidebarTab {
+	/** Tab label shown in the strip above the sidebar. */
+	label: string;
+	/** Where the tab points (typically the section landing, e.g. `/docs`). */
+	link: string;
+	/**
+	 * Pathname prefix identifying both the pages and the sidebar entries that
+	 * belong to this tab (e.g. `/docs`, `/cookbooks`). The active tab is the one
+	 * whose `match` is the longest prefix of the current URL; each top-level
+	 * sidebar entry is shown under the tab whose `match` prefixes its links.
+	 */
+	match: string;
+}
+
 export interface CallToAction {
 	label: string;
 	href: string;
@@ -47,6 +61,13 @@ export interface SiteConfig {
 	editPath?: string;
 	/** Primary header navigation links. */
 	topNav?: NavItem[];
+	/**
+	 * Optional tabs rendered above the sidebar that partition the docs into
+	 * sections (e.g. Documentation / Cookbooks), each showing only its own
+	 * sidebar entries. When omitted, the sidebar renders as a single list
+	 * (fully backward compatible).
+	 */
+	tabs?: SidebarTab[];
 	/** Header call-to-action button. */
 	cta?: CallToAction;
 	/** Social links. `github` is derived from `repo` when omitted. */

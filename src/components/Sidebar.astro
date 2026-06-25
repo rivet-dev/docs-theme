@@ -1,19 +1,123 @@
 ---
 /**
- * Sidebar override — identical to Starlight's default wrapper but swaps in our
- * icon-augmented SidebarSublist (see that file for the narrow-exception note).
+ * Sidebar override — swaps in our icon-augmented SidebarSublist, and (when the
+ * SiteConfig declares `tabs`) renders a tab strip above the sidebar that
+ * partitions the docs into sections, each showing only its own entries.
+ *
+ * Tabs are opt-in: with no `tabs` configured this behaves exactly like the
+ * default wrapper (single sidebar, no strip), so existing consumers are
+ * unaffected.
  */
 import MobileMenuFooter from "virtual:starlight/components/MobileMenuFooter";
 import SidebarPersister from "@astrojs/starlight/components/SidebarPersister.astro";
 import SidebarSublist from "./SidebarSublist.astro";
+import config from "virtual:rivet-docs/config";
 
 const { sidebar } = Astro.locals.starlightRoute;
+const tabs = config.tabs ?? [];
+const hasTabs = tabs.length > 0;
+const currentPath = Astro.url.pathname;
+
+// Strip a trailing slash (except the root) so prefix checks are consistent.
+function norm(p) {
+	if (!p) return "/";
+	return p !== "/" && p.endsWith("/") ? p.slice(0, -1) : p;
+}
+
+// True when `path` is `match` or a descendant of it.
+function underMatch(path, match) {
+	const a = norm(path);
+	const m = norm(match);
+	return a === m || a.startsWith(m + "/");
+}
+
+// Every href reachable under a sidebar entry (recursing into groups).
+function hrefsOf(entry) {
+	if (entry.href) return [entry.href];
+	return (entry.entries ?? []).flatMap(hrefsOf);
+}
+
+// Index of the tab whose `match` is the longest prefix of `path`, or -1.
+function bestTabFor(path) {
+	let best = -1;
+	let bestLen = -1;
+	tabs.forEach((tab, i) => {
+		const len = norm(tab.match).length;
+		if (underMatch(path, tab.match) && len > bestLen) {
+			best = i;
+			bestLen = len;
+		}
+	});
+	return best;
+}
+
+// The tab a top-level entry belongs to: by its links' best match; entries that
+// match no tab fall to the first tab so nothing is ever hidden entirely.
+function tabForEntry(entry) {
+	let best = -1;
+	let bestLen = -1;
+	for (const href of hrefsOf(entry)) {
+		const i = bestTabFor(href);
+		if (i !== -1 && norm(tabs[i].match).length > bestLen) {
+			best = i;
+			bestLen = norm(tabs[i].match).length;
+		}
+	}
+	return best === -1 ? 0 : best;
+}
+
+const activeTab = hasTabs ? Math.max(0, bestTabFor(currentPath)) : 0;
+const visibleSidebar = hasTabs
+	? sidebar.filter((entry) => tabForEntry(entry) === activeTab)
+	: sidebar;
 ---
 
+{
+	hasTabs && (
+		<nav class="rd-tabs" aria-label="Documentation sections">
+			{tabs.map((tab, i) => (
+				<a
+					href={tab.link}
+					class:list={["rd-tab", { active: i === activeTab }]}
+					aria-current={i === activeTab ? "page" : undefined}
+				>
+					{tab.label}
+				</a>
+			))}
+		</nav>
+	)
+}
+
 <SidebarPersister>
-	<SidebarSublist sublist={sidebar} />
+	<SidebarSublist sublist={visibleSidebar} />
 </SidebarPersister>
 
 <div class="md:sl-hidden">
 	<MobileMenuFooter />
 </div>
+
+<style>
+	.rd-tabs {
+		display: flex;
+		gap: 0.25rem;
+		margin-block-end: 1rem;
+		border-block-end: 1px solid var(--sl-color-gray-5);
+	}
+	.rd-tab {
+		padding: 0.4rem 0.6rem;
+		margin-block-end: -1px;
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+		line-height: 1.2;
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+		border-block-end: 2px solid transparent;
+	}
+	.rd-tab:hover {
+		color: var(--sl-color-white);
+	}
+	.rd-tab.active {
+		color: var(--sl-color-white);
+		border-block-end-color: var(--sl-color-text-accent);
+	}
+</style>

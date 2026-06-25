@@ -3,7 +3,7 @@
  * the component overrides. Provided by the companion integration in index.mjs.
  */
 declare module "virtual:rivet-docs/config" {
-	import type { CallToAction, Landing, NavItem } from "./site-config";
+	import type { CallToAction, Landing, NavItem, SidebarTab } from "./site-config";
 
 	const config: {
 		product: string;
@@ -12,6 +12,7 @@ declare module "virtual:rivet-docs/config" {
 		repo: string | null;
 		branch: string;
 		topNav: NavItem[] | null;
+		tabs: SidebarTab[] | null;
 		cta: CallToAction | null;
 		social: { discord?: string; github?: string };
 		landing: Landing | null;
