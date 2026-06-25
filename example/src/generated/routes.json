@@ -1,0 +1,8 @@
+{
+  "pages": {
+    "/docs": {
+      "title": "Hello World",
+      "description": "First page rendered through the de-Starlighted docs-theme pipeline."
+    }
+  }
+}

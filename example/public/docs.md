@@ -1,0 +1,17 @@
+# Hello World
+
+First page rendered through the de-Starlighted docs-theme pipeline.
+
+This page is rendered by the **rivet docs pipeline** copied into
+`@rivet-dev/docs-theme` — no Starlight involved.
+
+## A code block
+
+```ts
+const greeting: string = "hello from shiki";
+console.log(greeting);
+```
+
+## A second heading
+
+Some prose to confirm headings get IDs and the table of contents is produced.

@@ -8,9 +8,10 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@rivet-dev/docs-theme": "file:..",
-    "@astrojs/starlight": "^0.36.0",
+    "@rivet-dev/docs-theme": "workspace:*",
+    "@astrojs/react": "^4.1.2",
     "astro": "^5.18.2",
-    "sharp": "^0.33.5"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
