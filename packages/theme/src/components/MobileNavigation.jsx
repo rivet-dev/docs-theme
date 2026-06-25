@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Fragment, createContext, useContext } from "react";
 import { create } from "zustand";
 
-import { Header } from "./Header";
 import { Navigation } from "./Navigation";
 
 function MenuIcon(props) {
@@ -83,18 +82,6 @@ export function MobileNavigation({ navigation }) {
 						</Transition.Child>
 
 						<Dialog.Panel>
-							<Transition.Child
-								as={Fragment}
-								enter="duration-300 ease-out"
-								enterFrom="opacity-0"
-								enterTo="opacity-100"
-								leave="duration-200 ease-in"
-								leaveFrom="opacity-100"
-								leaveTo="opacity-0"
-							>
-								<Header navigation={navigation} />
-							</Transition.Child>
-
 							<Transition.Child
 								as={Fragment}
 								enter="duration-500 ease-in-out"

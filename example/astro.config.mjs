@@ -2,8 +2,21 @@ import { defineConfig } from "astro/config";
 import { docsTheme } from "@rivet-dev/docs-theme";
 
 const siteConfig = {
-  product: "Example",
+  product: "Example Docs",
+  productLogo: "/logo.svg",
   productHome: "/",
+  siteUrl: "https://example.com",
+  topNav: [{ label: "Docs", href: "/", match: "/" }],
+  tabs: [{ label: "Documentation", href: "/", match: "/" }],
+  cta: { label: "Get Started", href: "/" },
+  social: { github: "https://github.com/rivet-dev" },
+  footer: {
+    columns: {
+      Docs: [{ name: "Home", href: "/" }],
+    },
+    social: [{ icon: "faGithub", href: "https://github.com/rivet-dev", label: "GitHub" }],
+    copyright: "© Example",
+  },
 };
 
 export default defineConfig({
@@ -12,8 +25,6 @@ export default defineConfig({
   integrations: [...docsTheme(siteConfig)],
   vite: {
     ssr: {
-      // The theme + vendored UI packages ship TypeScript/TSX source; let Vite
-      // compile them instead of trying to externalize them at SSR time.
       noExternal: ["@rivet-dev/docs-theme", "@rivet-gg/components", "@rivet-gg/icons"],
     },
   },

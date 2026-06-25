@@ -4,9 +4,8 @@ import { ActiveLink } from "../ActiveLink";
 import { Tree } from "../DocsNavigation";
 import { NavigationStateProvider } from "../../providers/NavigationStateProvider";
 import type { SidebarItem } from "../../lib/sitemap";
-import logoUrl from "../../images/rivet-logos/icon-text-white.svg";
-import logoTextBlackUrl from "../../images/rivet-logos/icon-text-black.svg";
-import logoIconUrl from "../../images/rivet-logos/icon-white.svg";
+import config from "virtual:rivet-docs/config";
+import type { NavItem, ProductItem } from "../../site-config";
 import { cn } from "@rivet-gg/components";
 import { Header as RivetHeader } from "@rivet-gg/components/header";
 import { Icon, faDiscord } from "@rivet-gg/icons";
@@ -20,19 +19,45 @@ import {
 } from "@rivet-gg/components";
 import { faChevronDown } from "@rivet-gg/icons";
 import { ArrowRight } from "lucide-react";
-import actorsLogoUrl from "../../images/products/actors-logo.svg";
-import agentosLogoUrl from "../../images/products/agentos-logo.svg";
-import sandboxAgentLogoUrl from "../../images/products/sandbox-agent-logo.svg";
 import { GitHubDropdown } from "./GitHubDropdown";
 import { HeaderSearch } from "./HeaderSearch";
 import { LogoContextMenu } from "./LogoContextMenu";
 import { DocsTabs } from "../DocsTabs";
+
+/** Where the brand logo links to. */
+const productHome = config.productHome || "/";
+
+/**
+ * Brand logo, driven by config. Renders `config.productLogo` as an image when
+ * present, otherwise falls back to the product name as text.
+ */
+function BrandLogo({ className, alt }: { className?: string; alt?: string }) {
+	if (config.productLogo) {
+		return (
+			<img
+				src={config.productLogo}
+				width={80}
+				height={24}
+				className={className}
+				alt={alt ?? config.product}
+				loading="eager"
+				decoding="async"
+			/>
+		);
+	}
+	return (
+		<span className={cn("whitespace-nowrap text-base font-semibold", className)}>
+			{config.product}
+		</span>
+	);
+}
 
 interface TextNavItemProps {
 	href: string;
 	children: ReactNode;
 	className?: string;
 	ariaCurrent?: boolean | "page" | "step" | "location" | "date" | "time";
+	external?: boolean;
 }
 
 function TextNavItem({
@@ -40,12 +65,15 @@ function TextNavItem({
 	children,
 	className,
 	ariaCurrent,
+	external,
 }: TextNavItemProps) {
 	return (
 		<div className={cn("px-2.5 py-2", className)}>
 			<RivetHeader.NavItem asChild>
 				<a
 					href={href}
+					target={external ? "_blank" : undefined}
+					rel={external ? "noopener noreferrer" : undefined}
 					className={cn(
 						"text-zinc-400 hover:text-white transition-colors duration-200",
 						ariaCurrent === "page" && "text-white",
@@ -72,21 +100,7 @@ function ProductsDropdown({
 	const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isHoveringRef = useRef(false);
 
-	const products = [
-		{
-			label: "Actors",
-			href: "/actors",
-			logo: actorsLogoUrl,
-			description: "Build stateful backends",
-		},
-		{
-			label: "agentOS",
-			href: "https://agentos-sdk.dev",
-			logo: agentosLogoUrl,
-			description: "Everything agents need to run and operate",
-			external: true,
-		},
-	];
+	const products: ProductItem[] = config.products ?? [];
 
 	const cancelClose = () => {
 		if (closeTimeoutRef.current) {
@@ -129,6 +143,9 @@ function ProductsDropdown({
 	useEffect(() => {
 		return () => cancelClose();
 	}, []);
+
+	// No products configured -> omit the dropdown entirely.
+	if (!products.length) return null;
 
 	if (lightTheme) {
 		return (
@@ -181,24 +198,30 @@ function ProductsDropdown({
 							<a
 								key={product.href}
 								href={product.href}
+								target={product.external ? "_blank" : undefined}
+								rel={product.external ? "noopener noreferrer" : undefined}
 								className="group/product-row flex items-center gap-2.5 rounded-xl px-3 py-1 text-ink transition-colors hover:bg-ink/[0.07]"
 							>
-								<img
-									src={product.logo.src}
-									alt={product.label}
-									width={18}
-									height={18}
-									className="h-[18px] w-[18px] shrink-0 invert opacity-85"
-									loading="lazy"
-									decoding="async"
-								/>
+								{product.logo && (
+									<img
+										src={product.logo}
+										alt={product.label}
+										width={18}
+										height={18}
+										className="h-[18px] w-[18px] shrink-0 invert opacity-85"
+										loading="lazy"
+										decoding="async"
+									/>
+								)}
 								<div className="min-w-0 flex-1">
 									<div className="text-sm font-medium leading-tight text-ink">
 										{product.label}
 									</div>
-									<div className="text-xs leading-tight text-ink-faint">
-										{product.description}
-									</div>
+									{product.description && (
+										<div className="text-xs leading-tight text-ink-faint">
+											{product.description}
+										</div>
+									)}
 								</div>
 								<ArrowRight
 									aria-hidden="true"
@@ -253,16 +276,19 @@ function ProductsDropdown({
 				>
 					<div className="flex flex-col gap-1">
 						{products.map((product) => (
-							<React.Fragment key={product.href}>
-								<a
-									href={product.href}
-									className={cn(
-										"group flex items-center gap-3 p-3 rounded-lg transition-colors cursor-pointer",
-										lightTheme ? "hover:bg-zinc-100" : "hover:bg-white/5",
-									)}
-								>
+							<a
+								key={product.href}
+								href={product.href}
+								target={product.external ? "_blank" : undefined}
+								rel={product.external ? "noopener noreferrer" : undefined}
+								className={cn(
+									"group flex items-center gap-3 p-3 rounded-lg transition-colors cursor-pointer",
+									lightTheme ? "hover:bg-zinc-100" : "hover:bg-white/5",
+								)}
+							>
+								{product.logo && (
 									<img
-										src={product.logo.src}
+										src={product.logo}
 										alt={product.label}
 										width={24}
 										height={24}
@@ -270,47 +296,24 @@ function ProductsDropdown({
 										loading="lazy"
 										decoding="async"
 									/>
-									<div className="flex flex-col">
-										<div className={cn(
-											"font-medium text-sm transition-colors",
-											lightTheme ? "text-zinc-900" : "text-white group-hover:text-white",
-										)}>
-											{product.label}
-										</div>
+								)}
+								<div className="flex flex-col">
+									<div className={cn(
+										"font-medium text-sm transition-colors",
+										lightTheme ? "text-zinc-900" : "text-white group-hover:text-white",
+									)}>
+										{product.label}
+									</div>
+									{product.description && (
 										<div className={cn(
 											"text-xs transition-colors leading-relaxed",
 											lightTheme ? "text-zinc-500 group-hover:text-zinc-700" : "text-zinc-400 group-hover:text-zinc-300",
 										)}>
 											{product.description}
 										</div>
-									</div>
-								</a>
-								{product.subItems?.map((sub) => (
-									<a
-										key={sub.href}
-										href={sub.href}
-										className={cn(
-											"group flex items-center gap-2.5 py-1.5 pl-12 pr-3 rounded-lg transition-colors cursor-pointer",
-											lightTheme ? "hover:bg-zinc-100" : "hover:bg-white/5",
-										)}
-									>
-										<sub.icon
-											className={cn(
-												"h-3.5 w-3.5 transition-colors",
-												lightTheme ? "text-zinc-500 group-hover:text-zinc-700" : "text-zinc-500 group-hover:text-zinc-300",
-											)}
-										/>
-										<span
-											className={cn(
-												"text-xs transition-colors",
-												lightTheme ? "text-zinc-500 group-hover:text-zinc-700" : "text-zinc-400 group-hover:text-zinc-300",
-											)}
-										>
-											{sub.label}
-										</span>
-									</a>
-								))}
-							</React.Fragment>
+									)}
+								</div>
+							</a>
 						))}
 					</div>
 				</DropdownMenuContent>
@@ -413,27 +416,15 @@ export function Header({
 							<>
 								{/* Mobile logo */}
 								<div className="md:hidden ml-1">
-									<a href="/">
-										<img
-											src={logoTextBlackUrl.src}
-											width={80}
-											height={24}
-											className="w-20 shrink-0"
-											alt="Rivet logo"
-										/>
+									<a href={productHome}>
+										<BrandLogo className="w-20 shrink-0" />
 									</a>
 								</div>
 								{/* Desktop logo */}
 								<div className="hidden md:block">
 									<LogoContextMenu>
-										<a href="/">
-											<img
-												src={logoTextBlackUrl.src}
-												width={80}
-												height={24}
-												className="ml-1 w-20 shrink-0"
-												alt="Rivet logo"
-											/>
+										<a href={productHome}>
+											<BrandLogo className="ml-1 w-20 shrink-0" />
 										</a>
 									</LogoContextMenu>
 								</div>
@@ -444,18 +435,22 @@ export function Header({
 						links={
 							<div className="flex flex-row items-center">
 								{variant === "full-width" && <HeaderSearch />}
-								<RivetHeader.NavItem asChild className="p-2 mr-4 hidden md:flex">
-									<a href="https://rivet.dev/discord" className="!text-ink-soft hover:!text-ink transition-colors">
-										<Icon icon={faDiscord} />
-									</a>
-								</RivetHeader.NavItem>
+								{config.social?.discord && (
+									<RivetHeader.NavItem asChild className="p-2 mr-4 hidden md:flex">
+										<a href={config.social.discord} className="!text-ink-soft hover:!text-ink transition-colors">
+											<Icon icon={faDiscord} />
+										</a>
+									</RivetHeader.NavItem>
+								)}
 								<GitHubDropdown className="hidden md:inline-flex items-center justify-center whitespace-nowrap rounded-md border px-4 py-2 h-10 text-sm mr-2 transition-colors border-ink/15 text-ink-soft hover:border-ink/30 hover:text-ink" />
-								<a
-									href="https://dashboard.rivet.dev"
-									className="font-v2 subpixel-antialiased inline-flex items-center justify-center whitespace-nowrap rounded-md bg-ink px-4 py-2 text-sm text-cream hover:bg-ink/85 transition-colors"
-								>
-									Sign In
-								</a>
+								{config.cta && (
+									<a
+										href={config.cta.href}
+										className="font-v2 subpixel-antialiased inline-flex items-center justify-center whitespace-nowrap rounded-md bg-ink px-4 py-2 text-sm text-cream hover:bg-ink/85 transition-colors"
+									>
+										{config.cta.label}
+									</a>
+								)}
 							</div>
 						}
 						mobileBreadcrumbs={
@@ -470,21 +465,16 @@ export function Header({
 						breadcrumbs={
 							<div className="flex items-center font-v2 subpixel-antialiased [&_a]:!text-ink-soft [&_a:hover]:!text-ink [&_a[aria-current=page]]:!text-ink [&_button]:!text-ink-soft">
 								<ProductsDropdown active={active === "product"} lightTheme />
-								<TextNavItem
-									href="/docs"
-									ariaCurrent={active === "docs" ? "page" : undefined}
-								>
-									Documentation
-								</TextNavItem>
-								<TextNavItem href="/enterprise">
-									Enterprise
-								</TextNavItem>
-								<TextNavItem
-									href="/cloud"
-									ariaCurrent={active === "pricing" ? "page" : undefined}
-								>
-									Pricing
-								</TextNavItem>
+								{(config.topNav ?? []).map((item) => (
+									<TextNavItem
+										key={item.href}
+										href={item.href}
+										external={item.external}
+										ariaCurrent={item.match && pathname.startsWith(item.match) ? "page" : undefined}
+									>
+										{item.label}
+									</TextNavItem>
+								))}
 							</div>
 						}
 					/>
@@ -510,16 +500,8 @@ export function Header({
 			logo={
 				<div className="hidden md:block">
 					<LogoContextMenu>
-						<a href="/">
-							<img
-								src={isLightTheme ? logoTextBlackUrl.src : logoUrl.src}
-								width={80}
-								height={24}
-								className="ml-1 w-20 shrink-0"
-								alt="Rivet logo"
-								loading="eager"
-								decoding="async"
-							/>
+						<a href={productHome}>
+							<BrandLogo className="ml-1 w-20 shrink-0" />
 						</a>
 					</LogoContextMenu>
 				</div>
@@ -533,14 +515,16 @@ export function Header({
 							<HeaderSearch light={isLightTheme} />
 						</div>
 					)}
-					<RivetHeader.NavItem asChild className="p-2 mr-4">
-						<a
-							href="https://rivet.dev/discord"
-							className={isLightTheme ? "!text-ink-soft hover:!text-ink transition-colors" : "text-white/90"}
-						>
-							<Icon icon={faDiscord} className="drop-shadow-md" />
-						</a>
-					</RivetHeader.NavItem>
+					{config.social?.discord && (
+						<RivetHeader.NavItem asChild className="p-2 mr-4">
+							<a
+								href={config.social.discord}
+								className={isLightTheme ? "!text-ink-soft hover:!text-ink transition-colors" : "text-white/90"}
+							>
+								<Icon icon={faDiscord} className="drop-shadow-md" />
+							</a>
+						</RivetHeader.NavItem>
+					)}
 					<GitHubDropdown
 						className={cn(
 							"inline-flex items-center justify-center whitespace-nowrap rounded-md border px-4 py-2 h-10 text-sm mr-2 transition-colors",
@@ -549,17 +533,19 @@ export function Header({
 								: "border-white/10 hover:border-white/20 text-white/90 hover:text-white",
 						)}
 					/>
-					<a
-						href="https://dashboard.rivet.dev"
-						className={cn(
-							"font-v2 subpixel-antialiased inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors",
-							isLightTheme
-								? "bg-ink text-cream hover:bg-ink/85"
-								: "border border-white/10 bg-white/5 text-white shadow-sm hover:border-white/20",
-						)}
-					>
-						Sign In
-					</a>
+					{config.cta && (
+						<a
+							href={config.cta.href}
+							className={cn(
+								"font-v2 subpixel-antialiased inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors",
+								isLightTheme
+									? "bg-ink text-cream hover:bg-ink/85"
+									: "border border-white/10 bg-white/5 text-white shadow-sm hover:border-white/20",
+							)}
+						>
+							{config.cta.label}
+						</a>
+					)}
 				</div>
 			}
 			lightTheme={isLightTheme}
@@ -571,21 +557,16 @@ export function Header({
 					isLightTheme && "[&_a]:!text-ink-soft [&_a:hover]:!text-ink [&_a[aria-current=page]]:!text-ink [&_button]:!text-ink-soft",
 				)}>
 					<ProductsDropdown active={active === "product"} lightTheme={isLightTheme} align="start" />
-					<TextNavItem
-						href="/docs"
-						ariaCurrent={active === "docs" ? "page" : undefined}
-					>
-						Documentation
-					</TextNavItem>
-					<TextNavItem href="/enterprise">
-						Enterprise
-					</TextNavItem>
-					<TextNavItem
-						href="/cloud"
-						ariaCurrent={active === "pricing" ? "page" : undefined}
-					>
-						Pricing
-					</TextNavItem>
+					{(config.topNav ?? []).map((item) => (
+						<TextNavItem
+							key={item.href}
+							href={item.href}
+							external={item.external}
+							ariaCurrent={item.match && pathname.startsWith(item.match) ? "page" : undefined}
+						>
+							{item.label}
+						</TextNavItem>
+					))}
 				</div>
 			}
 		/>
@@ -604,71 +585,32 @@ function DocsMobileNavigation({
 	const pathname = usePathname() || "";
 	const isDocsPage = pathname.startsWith("/docs");
 
-	// Determine current section based on pathname
-	const getCurrentSection = () => {
-		if (pathname.startsWith("/docs/actors")) return "actors";
-		if (pathname.startsWith("/docs/integrations")) return "integrations";
-		if (pathname.startsWith("/docs/api")) return "api";
-		if (pathname.startsWith("/docs/quickstart")) return "quickstart";
-		return "overview";
-	};
+	// The in-docs section dropdown is driven by the configured tab strip; the
+	// main link list and products come from the same config the header uses.
+	const sections: NavItem[] = config.tabs ?? [];
+	const mainLinks: NavItem[] = config.topNav ?? [];
+	const products: ProductItem[] = config.products ?? [];
 
-	const sections = [
-		{ id: "overview", label: "Overview", href: "/docs" },
-		{ id: "quickstart", label: "Quickstart", href: "/docs/quickstart" },
-		{ id: "actors", label: "Actors", href: "/docs/actors" },
-		{ id: "integrations", label: "Integrations", href: "/docs/integrations" },
-		{ id: "api", label: "API Reference", href: "/docs/api" },
-	];
-
-	const mainLinks = [
-		{ href: "/docs", label: "Documentation" },
-		{ href: "/enterprise", label: "Enterprise" },
-		{ href: "/cloud", label: "Pricing" },
-	];
-
-	const products = [
-		{ label: "Actors", href: "/actors", logo: actorsLogoUrl },
-		{
-			label: "agentOS",
-			href: "https://agentos-sdk.dev",
-			logo: agentosLogoUrl,
-			external: true,
-		},
-		{
-			label: "Sandbox Agent SDK",
-			href: "https://sandboxagent.dev/",
-			logo: sandboxAgentLogoUrl,
-			external: true,
-		},
-		{
-			label: "Secure Exec SDK",
-			href: "https://secureexec.dev/",
-			logo: sandboxAgentLogoUrl,
-			external: true,
-		},
-	];
-
-	const currentSection = sections.find((s) => s.id === getCurrentSection());
+	// Current section = the configured tab whose match/href prefix is the
+	// longest match against the current path.
+	const currentSection = [...sections]
+		.filter((s) => pathname.startsWith(s.match ?? s.href))
+		.sort((a, b) => (b.match ?? b.href).length - (a.match ?? a.href).length)[0];
 
 	if (isLightTheme) {
 		return (
 			<div className="flex flex-col gap-2 font-v2 subpixel-antialiased text-sm">
 				{/* Home logo */}
-				<a href="/" className="py-3 px-2">
-					<img
-						src={logoTextBlackUrl.src}
-						alt="Rivet"
-						width={80}
-						height={24}
-						className="w-20"
-					/>
+				<a href={productHome} className="py-3 px-2">
+					<BrandLogo className="w-20" />
 				</a>
 
 				{/* Products section */}
-				<div className="text-ink-faint py-2 px-2 text-xs uppercase tracking-wide">
-					Products
-				</div>
+				{products.length > 0 && (
+					<div className="text-ink-faint py-2 px-2 text-xs uppercase tracking-wide">
+						Products
+					</div>
+				)}
 				{products.map((product) => (
 					<a
 						key={product.href}
@@ -677,27 +619,31 @@ function DocsMobileNavigation({
 						rel={product.external ? "noopener noreferrer" : undefined}
 						className="text-ink py-2 px-2 pl-4 hover:bg-ink/5 rounded-sm transition-colors flex items-center gap-2"
 					>
-						<img
-							src={product.logo.src}
-							alt={product.label}
-							width={16}
-							height={16}
-							className="h-4 w-4 invert opacity-85"
-							loading="lazy"
-							decoding="async"
-						/>
+						{product.logo && (
+							<img
+								src={product.logo}
+								alt={product.label}
+								width={16}
+								height={16}
+								className="h-4 w-4 invert opacity-85"
+								loading="lazy"
+								decoding="async"
+							/>
+						)}
 						{product.label}
 					</a>
 				))}
 
 				{/* Main navigation links */}
-				{mainLinks.map(({ href, label }) => (
+				{mainLinks.map((item) => (
 					<a
-						key={href}
-						href={href}
+						key={item.href}
+						href={item.href}
+						target={item.external ? "_blank" : undefined}
+						rel={item.external ? "noopener noreferrer" : undefined}
 						className="text-ink py-2 px-2 hover:bg-ink/5 rounded-sm transition-colors"
 					>
-						{label}
+						{item.label}
 					</a>
 				))}
 
@@ -707,24 +653,26 @@ function DocsMobileNavigation({
 						<div className="border-t-2 border-ink/10 my-2" />
 
 						{/* Section dropdown */}
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									className="w-full justify-between h-9 text-sm border-ink/15 bg-white/55 text-ink hover:bg-white/70 hover:border-ink/30"
-								>
-									{currentSection?.label || "Select Section"}
-									<Icon icon={faChevronDown} className="h-3.5 w-3.5 ml-2" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="w-[calc(100vw-3rem)] bg-white border border-ink/10 text-ink [&_[role=menuitem]]:text-ink [&_[role=menuitem][data-highlighted]]:bg-ink/[0.06] [&_[role=menuitem][data-highlighted]]:text-ink">
-								{sections.map(({ id, label, href }) => (
-									<DropdownMenuItem key={id} asChild>
-										<a href={href}>{label}</a>
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuContent>
-						</DropdownMenu>
+						{sections.length > 0 && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										variant="outline"
+										className="w-full justify-between h-9 text-sm border-ink/15 bg-white/55 text-ink hover:bg-white/70 hover:border-ink/30"
+									>
+										{currentSection?.label || "Select Section"}
+										<Icon icon={faChevronDown} className="h-3.5 w-3.5 ml-2" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent className="w-[calc(100vw-3rem)] bg-white border border-ink/10 text-ink [&_[role=menuitem]]:text-ink [&_[role=menuitem][data-highlighted]]:bg-ink/[0.06] [&_[role=menuitem][data-highlighted]]:text-ink">
+									{sections.map((s) => (
+										<DropdownMenuItem key={s.href} asChild>
+											<a href={s.href}>{s.label}</a>
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
 
 						{/* Tree/sidebar content */}
 						{tree && <div className="mt-1">{tree}</div>}
@@ -738,43 +686,34 @@ function DocsMobileNavigation({
 					</>
 				)}
 
-				{/* Dashboard button */}
-				<div className="mt-4 pt-4 border-t border-ink/10">
-					<a
-						href="https://dashboard.rivet.dev/"
-						className="flex items-center justify-center w-full rounded-md bg-ink px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-ink/85"
-					>
-						Dashboard
-					</a>
-				</div>
+				{/* Primary CTA button */}
+				{config.cta && (
+					<div className="mt-4 pt-4 border-t border-ink/10">
+						<a
+							href={config.cta.href}
+							className="flex items-center justify-center w-full rounded-md bg-ink px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-ink/85"
+						>
+							{config.cta.label}
+						</a>
+					</div>
+				)}
 			</div>
 		);
 	}
 
 	return (
 		<div className="flex flex-col gap-2 font-v2 subpixel-antialiased text-sm">
-			{/* Home logo - full logo on small screens, icon only on tablet */}
-			<a href="/" className="py-3 px-2">
-				<img
-					src={logoUrl.src}
-					alt="Rivet"
-					width={80}
-					height={24}
-					className="w-20 sm:hidden"
-				/>
-				<img
-					src={logoIconUrl.src}
-					alt="Rivet"
-					width={32}
-					height={32}
-					className="w-8 h-8 hidden sm:block"
-				/>
+			{/* Home logo */}
+			<a href={productHome} className="py-3 px-2">
+				<BrandLogo className="w-20" />
 			</a>
 
 			{/* Products section */}
-			<div className="text-zinc-500 py-2 px-2 text-xs uppercase tracking-wide">
-				Products
-			</div>
+			{products.length > 0 && (
+				<div className="text-zinc-500 py-2 px-2 text-xs uppercase tracking-wide">
+					Products
+				</div>
+			)}
 			{products.map((product) => (
 				<a
 					key={product.href}
@@ -783,27 +722,31 @@ function DocsMobileNavigation({
 					rel={product.external ? "noopener noreferrer" : undefined}
 					className="text-white py-2 px-2 pl-4 hover:bg-white/5 rounded-sm transition-colors flex items-center gap-2"
 				>
-					<img
-						src={product.logo.src}
-						alt={product.label}
-						width={16}
-						height={16}
-						className="h-4 w-4"
-						loading="lazy"
-						decoding="async"
-					/>
+					{product.logo && (
+						<img
+							src={product.logo}
+							alt={product.label}
+							width={16}
+							height={16}
+							className="h-4 w-4"
+							loading="lazy"
+							decoding="async"
+						/>
+					)}
 					{product.label}
 				</a>
 			))}
 
 			{/* Main navigation links */}
-			{mainLinks.map(({ href, label }) => (
+			{mainLinks.map((item) => (
 				<a
-					key={href}
-					href={href}
+					key={item.href}
+					href={item.href}
+					target={item.external ? "_blank" : undefined}
+					rel={item.external ? "noopener noreferrer" : undefined}
 					className="text-white py-2 px-2 hover:bg-white/5 rounded-sm transition-colors"
 				>
-					{label}
+					{item.label}
 				</a>
 			))}
 
@@ -813,28 +756,30 @@ function DocsMobileNavigation({
 					<div className="border-t-2 border-white/10 my-2" />
 
 					{/* Section dropdown */}
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button
-								variant="outline"
-								className="w-full justify-between h-9 text-sm border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20"
-							>
-								{currentSection?.label || "Select Section"}
-								<Icon icon={faChevronDown} className="h-3.5 w-3.5 ml-2" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent className="w-[calc(100vw-3rem)] bg-black/95 backdrop-blur-lg border-white/10">
-							{sections.map(({ id, label, href }) => (
-								<DropdownMenuItem
-									key={id}
-									asChild
-									className="text-white hover:bg-white/5 focus:bg-white/5"
+					{sections.length > 0 && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="outline"
+									className="w-full justify-between h-9 text-sm border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20"
 								>
-									<a href={href}>{label}</a>
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
+									{currentSection?.label || "Select Section"}
+									<Icon icon={faChevronDown} className="h-3.5 w-3.5 ml-2" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="w-[calc(100vw-3rem)] bg-black/95 backdrop-blur-lg border-white/10">
+								{sections.map((s) => (
+									<DropdownMenuItem
+										key={s.href}
+										asChild
+										className="text-white hover:bg-white/5 focus:bg-white/5"
+									>
+										<a href={s.href}>{s.label}</a>
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
 
 					{/* Tree/sidebar content */}
 					{tree && <div className="mt-1">{tree}</div>}
@@ -848,15 +793,17 @@ function DocsMobileNavigation({
 				</>
 			)}
 
-			{/* Dashboard button */}
-			<div className="mt-4 pt-4 border-t border-white/10">
-				<a
-					href="https://dashboard.rivet.dev/"
-					className="flex items-center justify-center w-full rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200"
-				>
-					Dashboard
-				</a>
-			</div>
+			{/* Primary CTA button */}
+			{config.cta && (
+				<div className="mt-4 pt-4 border-t border-white/10">
+					<a
+						href={config.cta.href}
+						className="flex items-center justify-center w-full rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200"
+					>
+						{config.cta.label}
+					</a>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -3,10 +3,8 @@ import { usePathname } from "../hooks/usePathname";
 import { Button } from "./Button";
 import routes from "../generated/routes.json";
 import clsx from "clsx";
+import config from "virtual:rivet-docs/config";
 
-import imgLogo from "../images/rivet-logos/icon-white.svg";
-import imgYC from "../images/logos/yc.svg";
-import imgA16z from "../images/logos/a16z.svg";
 import {
 	Icon,
 	faBluesky,
@@ -17,67 +15,16 @@ import {
 	faYoutube,
 } from "@rivet-gg/icons";
 
-const footer = {
-	product: [
-		{ name: "Actors", href: "/docs/actors" },
-		{ name: "agentOS", href: "https://agentos-sdk.dev", target: "_blank" },
-		{ name: "Sandbox Agent SDK", href: "https://sandboxagent.dev" },
-		{ name: "Secure Exec SDK", href: "https://secureexec.dev" },
-		{ name: "Cloud Pricing", href: "/cloud#pricing" },
-		{ name: "Enterprise", href: "/enterprise" },
-		{ name: "Talk to an engineer", href: "/talk-to-an-engineer" },
-		{ name: "Sales", href: "/sales" },
-	],
-	devs: [
-		{ name: "Documentation", href: "/docs/actors" },
-		// { name: "Integrations", href: "/integrations" },
-		// { name: "API Reference", href: "/docs/api" },
-		{ name: "Changelog", href: "/changelog" },
-		{ name: "Status Page", href: "https://rivet.betteruptime.com/" },
-	],
-	resources: [
-		{ name: "Blog", href: "/blog" },
-		{ name: "YC & Speedrun Deal", href: "/startups" },
-		{ name: "Open-Source Friends", href: "/oss-friends" },
-		{ name: "Press Kit", href: "https://releases.rivet.dev/press-kit.zip" },
-	],
-	legal: [
-		{ name: "Terms", href: "/terms" },
-		{ name: "Privacy Policy", href: "/privacy" },
-		{ name: "Acceptable Use", href: "/acceptable-use" },
-	],
-	social: [
-		{
-			name: "Discord",
-			href: "https://discord.gg/aXYfyNxYVn",
-			icon: faDiscord,
-		},
-		{
-			name: "Twitter",
-			href: "https://x.com/rivet_dev",
-			icon: faTwitter,
-		},
-		{
-			name: "Bluesky",
-			href: "https://bsky.app/profile/rivet.dev",
-			icon: faBluesky,
-		},
-		{
-			name: "GitHub",
-			href: "https://github.com/rivet-dev",
-			icon: faGithub,
-		},
-		{
-			name: "YouTube",
-			href: "https://www.youtube.com/@rivet-dev",
-			icon: faYoutube,
-		},
-		{
-			name: "LinkedIn",
-			href: "https://www.linkedin.com/company/72072261/",
-			icon: faLinkedin,
-		},
-	],
+// Map config social `icon` strings to the imported icon objects. Unknown
+// names are skipped gracefully (see SmallPrint).
+const SOCIAL_ICONS = {
+	bluesky: faBluesky,
+	discord: faDiscord,
+	github: faGithub,
+	linkedin: faLinkedin,
+	twitter: faTwitter,
+	x: faTwitter,
+	youtube: faYoutube,
 };
 
 function PageLink({ label, page, previous = false }) {
@@ -131,150 +78,64 @@ export function PageNextPrevious({ navigation }) {
 }
 
 function SmallPrint() {
+	const footerConfig = config.footer ?? {};
+	const columns = footerConfig.columns ?? {};
+	const social = footerConfig.social ?? [];
+	const columnEntries = Object.entries(columns);
+
 	return (
 		<div className="mx-auto max-w-7xl w-full py-16">
 			<div className="grid grid-cols-1 min-[440px]:grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
 				{/* Brand column */}
 				<div className="col-span-1 min-[440px]:col-span-2 md:col-span-4 lg:col-span-1 space-y-6">
-					<img className="h-8 w-8" src={imgLogo.src} alt="Rivet" />
-					<p className="text-sm text-ink-faint">
-						Infrastructure for the agentic era
-					</p>
+					{config.productLogo && (
+						<img className="h-8 w-8" src={config.productLogo} alt={config.product} />
+					)}
 					<div className="flex gap-4">
-						{footer.social.map((item) => (
-							<a
-								key={item.name}
-								href={item.href}
-								className="text-ink-faint hover:text-ink transition-colors"
-							>
-								<span className="sr-only">{item.name}</span>
-								<Icon icon={item.icon} aria-hidden="true" />
-							</a>
-						))}
+						{social.map((item) => {
+							const icon = SOCIAL_ICONS[item.icon];
+							if (!icon) return null;
+							return (
+								<a
+									key={item.href}
+									href={item.href}
+									className="text-ink-faint hover:text-ink transition-colors"
+								>
+									<span className="sr-only">{item.label ?? item.icon}</span>
+									<Icon icon={icon} aria-hidden="true" />
+								</a>
+							);
+						})}
 					</div>
 				</div>
 
-				{/* Product */}
-				<div>
-					<h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint mb-4">Product</h3>
-					<ul className="space-y-3">
-						{footer.product.map((item) => (
-							<li key={item.name}>
-								<a
-									href={item.href}
-									target={item.target}
-									className="text-sm text-ink-soft hover:text-ink transition-colors"
-								>
-									{item.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-
-				{/* Developers */}
-				<div>
-					<h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint mb-4">Developers</h3>
-					<ul className="space-y-3">
-						{footer.devs.map((item) => (
-							<li key={item.name}>
-								<a
-									href={item.href}
-									target={item.target}
-									className="text-sm text-ink-soft hover:text-ink transition-colors"
-								>
-									{item.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-
-				{/* Resources */}
-				<div>
-					<h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint mb-4">Resources</h3>
-					<ul className="space-y-3">
-						{footer.resources.map((item) => (
-							<li key={item.name}>
-								<a
-									href={item.href}
-									target={item.newTab ? "_blank" : null}
-									className="text-sm text-ink-soft hover:text-ink transition-colors"
-								>
-									{item.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-
-				{/* Legal */}
-				<div>
-					<h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint mb-4">Legal</h3>
-					<ul className="space-y-3">
-						{footer.legal.map((item) => (
-							<li key={item.name}>
-								<a
-									href={item.href}
-									className="text-sm text-ink-soft hover:text-ink transition-colors"
-								>
-									{item.name}
-								</a>
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
-
-			{/* Investor badges */}
-			<div className="mt-12 flex flex-col min-[440px]:flex-row flex-wrap items-start min-[440px]:items-center gap-4">
-				<span className="text-xs text-ink-faint">Backed by</span>
-				<div className="flex flex-wrap items-center gap-2">
-					<div className="flex items-center gap-2 rounded-full border border-ink/10 px-3 py-1.5 text-xs text-ink-soft">
-						<img src={imgYC.src} alt="Y Combinator" className="h-4 w-auto" />
-						<span>Y Combinator</span>
+				{/* Configured link columns */}
+				{columnEntries.map(([title, links]) => (
+					<div key={title}>
+						<h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint mb-4">{title}</h3>
+						<ul className="space-y-3">
+							{(links ?? []).map((item) => (
+								<li key={item.name}>
+									<a
+										href={item.href}
+										target={item.target}
+										className="text-sm text-ink-soft hover:text-ink transition-colors"
+									>
+										{item.name}
+									</a>
+								</li>
+							))}
+						</ul>
 					</div>
-					<div className="flex items-center gap-2 rounded-full border border-ink/10 px-3 py-1.5 text-xs text-ink-soft">
-						<img src={imgA16z.src} alt="a16z" className="h-3 w-auto footer-invert" />
-						<span>a16z Speedrun</span>
-					</div>
-				</div>
-				<a
-					href="/startups"
-					className="text-xs text-ink-faint hover:text-ink transition-colors"
-					style={{
-						backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-						backgroundSize: '6px 1px',
-						backgroundPosition: '0 100%',
-						backgroundRepeat: 'repeat-x',
-						paddingBottom: '4px'
-					}}
-				>
-					Are you as well?
-				</a>
-				<span className="ml-auto flex items-center gap-1.5 text-xs text-ink-faint">
-					<svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-						<rect width="14" height="10" fill="white" />
-						<rect y="0" width="14" height="1.2" fill="black" />
-						<rect y="2.2" width="14" height="1.2" fill="black" />
-						<rect y="4.4" width="14" height="1.2" fill="black" />
-						<rect y="6.6" width="14" height="1.2" fill="black" />
-						<rect y="8.8" width="14" height="1.2" fill="black" />
-						<rect width="5" height="5" fill="black" />
-					</svg>
-					Built in San Francisco, United States
-				</span>
+				))}
 			</div>
 
 			{/* Copyright */}
-			<div className="mt-12 border-t border-ink/10 pt-8">
-				<p className="text-xs text-ink-faint">
-					&copy; {new Date().getFullYear()} Rivet Gaming, Inc. All rights reserved.
-				</p>
-				<p className="mt-2 text-xs text-ink-faint/80">
-					Cloudflare® and Durable Objects™ are trademarks of Cloudflare, Inc. No affiliation or endorsement implied.
-				</p>
-			</div>
+			{footerConfig.copyright && (
+				<div className="mt-12 border-t border-ink/10 pt-8">
+					<p className="text-xs text-ink-faint">{footerConfig.copyright}</p>
+				</div>
+			)}
 		</div>
 	);
 }
