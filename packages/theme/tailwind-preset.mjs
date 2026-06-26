@@ -178,5 +178,12 @@ export default {
 		},
 	},
 	presets: [require("@rivet-gg/components/tailwind-base").default],
-	plugins: [require("@tailwindcss/typography")],
+	plugins: [
+		require("@tailwindcss/typography"),
+		// The docs sidebar uses `aria-current-page:` utilities (e.g. the active
+		// item's left border); register the variant so those classes generate.
+		require("tailwindcss/plugin")(({ addVariant }) => {
+			addVariant("aria-current-page", '&[aria-current="page"]');
+		}),
+	],
 };
