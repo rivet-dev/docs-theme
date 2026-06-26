@@ -234,6 +234,15 @@ function rehypeTableOfContents() {
 			}
 		});
 
+		// Inject `export const tableOfContents` only in MDX context (the tree
+		// already carries mdx* nodes). Plain-markdown rendering (e.g. the cookbook
+		// content loader's renderMarkdown) cannot serialize an mdxjsEsm node, and
+		// the page builds its TOC from render()'s `headings` anyway — so skip it.
+		const isMdx = tree.children.some(
+			(n: { type?: string }) => typeof n.type === "string" && n.type.startsWith("mdx"),
+		);
+		if (!isMdx) return;
+
 		const code = `export const tableOfContents = ${JSON.stringify(headings, null, 2)};`;
 
 		tree.children.push({
