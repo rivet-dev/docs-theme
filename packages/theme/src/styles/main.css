@@ -263,12 +263,6 @@
     @apply border-ink/15 bg-white text-ink;
   }
 
-  /* Active sidebar item: pine left border + ink text. The DocsNavigation links
-     use `aria-current-page:` utilities, but that variant doesn't always generate
-     when the theme is a symlinked dep, so set it explicitly on the active link. */
-  a[aria-current="page"].border-l-2 {
-    @apply border-l-pine text-ink;
-  }
 
   /* The Steps container applies `.step` to its direct <h3> children via the
      Tailwind arbitrary variant `[&>h3]:step`. That variant only compiles where
@@ -768,4 +762,12 @@
 :is(.blog-article, .docs-article) [data-tab-trigger].is-tab-active {
 	color: #1b1916;
 	border-bottom-color: #1b1916;
+}
+
+/* Active sidebar item: pine left border + ink text. Plain CSS (NOT in @layer
+   utilities, which Tailwind purges) so it always ships. The DocsNavigation
+   active link has aria-current="page" + the border-l-2 class. */
+a[aria-current="page"].border-l-2 {
+	border-left-color: #2e4034; /* pine */
+	color: #1b1916; /* ink */
 }
