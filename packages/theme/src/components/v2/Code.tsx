@@ -155,9 +155,16 @@ function parseCodeMeta(meta: string | undefined) {
 
 	let parsedHide = false;
 	let parsedNocheck = false;
-	const titleParts: string[] = [];
 
-	for (const token of meta.trim().split(/\s+/)) {
+	// Starlight-style attributes: `title="server.ts"` / `file="server.ts"`.
+	// Extract their values (not the literal `title="..."` token) and strip them
+	// before bare-token parsing.
+	const attrMatch = meta.match(/\b(?:title|file)=(?:"([^"]*)"|'([^']*)')/);
+	const attrTitle = attrMatch ? (attrMatch[1] ?? attrMatch[2]) : undefined;
+	const rest = meta.replace(/\b(?:title|file)=(?:"[^"]*"|'[^']*')/g, " ");
+
+	const titleParts: string[] = [];
+	for (const token of rest.trim().split(/\s+/)) {
 		if (token === "@hide") {
 			parsedHide = true;
 		} else if (token === "@nocheck") {
@@ -167,7 +174,8 @@ function parseCodeMeta(meta: string | undefined) {
 		}
 	}
 
-	const parsedTitle = titleParts.length > 0 ? titleParts.join(" ") : undefined;
+	const parsedTitle =
+		attrTitle ?? (titleParts.length > 0 ? titleParts.join(" ") : undefined);
 
 	return { title: parsedTitle, hide: parsedHide, nocheck: parsedNocheck };
 }

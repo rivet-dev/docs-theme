@@ -70,9 +70,21 @@ function rehypeParseCodeBlocks() {
 						}
 					}
 
-					// New format: space-separated tokens with @flags
-					// Format: {title}? @nocheck? @hide?
-					const tokens = trimmed.split(/\s+/);
+					// Format: {title}? @nocheck? @hide?, plus Starlight-style
+					// attributes title="server.ts" / file="server.ts" (extract the
+					// value, not the literal `title="..."` token).
+					const attrMatch = trimmed.match(
+						/\b(?:title|file)=(?:"([^"]*)"|'([^']*)')/,
+					);
+					const attrTitle = attrMatch
+						? (attrMatch[1] ?? attrMatch[2])
+						: undefined;
+					const rest = trimmed.replace(
+						/\b(?:title|file)=(?:"[^"]*"|'[^']*')/g,
+						" ",
+					);
+
+					const tokens = rest.split(/\s+/);
 					const titleParts: string[] = [];
 
 					for (const token of tokens) {
@@ -85,8 +97,11 @@ function rehypeParseCodeBlocks() {
 						}
 					}
 
-					if (titleParts.length > 0) {
-						parentNode.properties.title = titleParts.join(" ");
+					const resolvedTitle =
+						attrTitle ??
+						(titleParts.length > 0 ? titleParts.join(" ") : undefined);
+					if (resolvedTitle) {
+						parentNode.properties.title = resolvedTitle;
 					}
 				}
 			}

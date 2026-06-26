@@ -85,9 +85,7 @@
 		"jotai": "^2.14.0",
 		"jotai-effect": "^2.1.0",
 		"lucide-react": "^0.439.0",
-		"react": "^19.1.1",
 		"react-day-picker": "8.10.1",
-		"react-dom": "^19.1.1",
 		"react-hook-form": "^7.62.0",
 		"react-resizable-panels": "^2.1.9",
 		"recharts": "^2.15.4",
@@ -99,7 +97,9 @@
 	},
 	"peerDependencies": {
 		"lodash": "^4.0.0",
-		"posthog-js": "^1.0.0"
+		"posthog-js": "^1.0.0",
+		"react": "^19",
+		"react-dom": "^19"
 	},
 	"peerDependenciesMeta": {
 		"posthog-js": {
