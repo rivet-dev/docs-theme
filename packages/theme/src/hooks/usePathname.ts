@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
  * Custom hook that replicates Next.js usePathname behavior
  * Returns the current pathname from window.location
  */
-export function usePathname(): string {
-	const [pathname, setPathname] = useState("");
+export function usePathname(initial = ""): string {
+	const [pathname, setPathname] = useState(initial);
 
 	useEffect(() => {
 		const update = () => setPathname(window.location.pathname);
