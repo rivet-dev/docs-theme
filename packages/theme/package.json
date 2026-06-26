@@ -13,9 +13,10 @@
     "./integrations/generate-routes": "./dist/integrations/generate-routes.js",
     "./lib/*": "./src/lib/*",
     "./sitemap": "./src/lib/sitemap.ts",
-    "./styles/*": "./src/styles/*"
+    "./styles/*": "./src/styles/*",
+    "./tailwind-preset": "./tailwind-preset.mjs"
   },
-  "files": ["src", "dist", "fonts", "assets", "LICENSE", "README.md"],
+  "files": ["src", "dist", "fonts", "assets", "tailwind-preset.mjs", "LICENSE", "README.md"],
   "scripts": {
     "build": "node build.mjs"
   },
