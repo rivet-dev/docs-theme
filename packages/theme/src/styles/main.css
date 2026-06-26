@@ -263,6 +263,43 @@
     @apply border-ink/15 bg-white text-ink;
   }
 
+  /* The Steps container applies `.step` to its direct <h3> children via the
+     Tailwind arbitrary variant `[&>h3]:step`. That variant only compiles where
+     `step` is a known utility; in a pnpm-symlinked consumer it can be dropped,
+     leaving steps unnumbered. Apply the counter + chip directly to `.steps > h3`
+     so the numbered rail always renders (same visual as `.step`). */
+  .steps > h3 {
+    counter-increment: step;
+    position: relative;
+  }
+  .steps > h3:before {
+    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-background text-center -indent-px font-mono text-base font-medium;
+    @apply ml-[-50px] mt-[-4px];
+    content: counter(step);
+  }
+  .docs-article .steps > h3:before {
+    @apply border-ink/15 bg-white text-ink;
+  }
+
+  /* Some docs author steps as a markdown ordered list inside <Steps> (rather
+     than h3 children). Style those <li> as the same numbered rail. */
+  .steps > ol {
+    @apply list-none pl-0 ml-0;
+    counter-reset: step;
+  }
+  .steps > ol > li {
+    counter-increment: step;
+    position: relative;
+  }
+  .steps > ol > li:before {
+    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-background text-center -indent-px font-mono text-base font-medium;
+    @apply ml-[-50px] mt-[-4px];
+    content: counter(step);
+  }
+  .docs-article .steps > ol > li:before {
+    @apply border-ink/15 bg-white text-ink;
+  }
+
 	/* Hide scrollbar for Chrome, Safari and Opera */
 	.scrollbar-hide::-webkit-scrollbar {
 		display: none;
