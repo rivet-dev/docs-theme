@@ -77,6 +77,13 @@
   color: inherit;
 }
 
+/* Code blocks render in the mono face; the shiki <pre> otherwise inherits the
+   sans body font (Manrope), so code looked proportional vs rivet. */
+.shiki,
+.shiki code {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 .shiki .line {
   @apply break-all;
 }
