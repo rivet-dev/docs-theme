@@ -1,4 +1,4 @@
-import { Icon } from "@rivet-gg/icons";
+import { Icon, faArrowRight } from "@rivet-gg/icons";
 import actorsLogo from "../../images/products/actors-logo.svg";
 
 export interface DocsLandingItem {
@@ -86,6 +86,10 @@ function LandingCard({ item }: { item: DocsLandingItem }) {
 							{item.badge}
 						</span>
 					)}
+					<Icon
+						icon={faArrowRight}
+						className="ml-auto text-sm text-ink-faint transition-all duration-200 group-hover:translate-x-1 group-hover:text-ink"
+					/>
 				</div>
 				{item.description && (
 					<p className="text-sm leading-relaxed text-ink-soft">
