@@ -164,7 +164,7 @@ const jsonLd = {
 			</Providers>
 		</TooltipProvider>
 		<EmbedDetector client:load />
-		<Footer client:load initialPathname={Astro.url.pathname} />
+		<slot name="footer"><Footer client:load initialPathname={Astro.url.pathname} /></slot>
 		<CopyCodeScript />
 		<TabsScript />
 		<MermaidScript />

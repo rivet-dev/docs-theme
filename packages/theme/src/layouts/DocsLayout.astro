@@ -21,6 +21,10 @@ const pathname = Astro.url.pathname;
 			<slot />
 		</div>
 	</div>
+	{/* Forward a consumer-provided footer (e.g. the marketing Footer) through to
+	    BaseLayout's named footer slot; if none is passed, BaseLayout's default
+	    (theme) Footer renders. */}
+	<slot name="footer" slot="footer" />
 </BaseLayout>
 
 <!-- Docs sit on the porcelain field, matching the marketing pages. The body
