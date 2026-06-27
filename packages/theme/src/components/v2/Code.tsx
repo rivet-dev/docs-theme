@@ -5,7 +5,9 @@ import {
 	TooltipProvider,
 	WithTooltip,
 } from "@rivet-gg/components";
+import config from "virtual:rivet-docs/config";
 import {
+	faArrowUpRightFromSquare,
 	faCode,
 	faCopy,
 	faDatabase,
@@ -126,6 +128,8 @@ export function CodeGroup({ children, className, stacked }: CodeGroupProps) {
 interface PreProps {
 	file?: string;
 	title?: string;
+	/** Repo-relative path of an embedded example file; renders a source link. */
+	sourceFile?: string;
 	language?: keyof typeof languageNames | string;
 	isInGroup?: boolean;
 	children?: ReactElement;
@@ -134,6 +138,13 @@ interface PreProps {
 	flush?: boolean;
 	hide?: boolean;
 	className?: string | string[];
+}
+
+// Build a GitHub "view source" URL for an embedded example file from config.repo.
+function sourceFileUrl(path: string): string | undefined {
+	const repo = (config as { repo?: string } | undefined)?.repo;
+	if (!repo) return undefined;
+	return `https://github.com/${repo}/blob/main/${path.replace(/^\/+/, "")}`;
 }
 
 function looksLikeMermaid(code: string): boolean {
@@ -150,18 +161,32 @@ function looksLikeMermaid(code: string): boolean {
 
 function parseCodeMeta(meta: string | undefined) {
 	if (!meta) {
-		return { title: undefined as string | undefined, hide: false, nocheck: false };
+		return {
+			title: undefined as string | undefined,
+			hide: false,
+			nocheck: false,
+			sourceFile: undefined as string | undefined,
+		};
 	}
 
 	let parsedHide = false;
 	let parsedNocheck = false;
 
-	// Starlight-style attributes: `title="server.ts"` / `file="server.ts"`.
-	// Extract their values (not the literal `title="..."` token) and strip them
-	// before bare-token parsing.
-	const attrMatch = meta.match(/\b(?:title|file)=(?:"([^"]*)"|'([^']*)')/);
-	const attrTitle = attrMatch ? (attrMatch[1] ?? attrMatch[2]) : undefined;
-	const rest = meta.replace(/\b(?:title|file)=(?:"[^"]*"|'[^']*')/g, " ");
+	// Starlight-style attributes: `title="server.ts"` / `file="..."`. A `file=`
+	// with a slash is an EMBED path (rendered by remark-embed-code from a real
+	// example file) — show its basename and expose the path for a source link.
+	// A bare `file="server.ts"` (no slash) stays a plain title label.
+	const fileMatch = meta.match(/\bfile=(?:"([^"]*)"|'([^']*)')/);
+	const fileVal = fileMatch ? (fileMatch[1] ?? fileMatch[2]) : undefined;
+	const titleMatch = meta.match(/\btitle=(?:"([^"]*)"|'([^']*)')/);
+	const titleVal = titleMatch ? (titleMatch[1] ?? titleMatch[2]) : undefined;
+	const sourceFile = fileVal && fileVal.includes("/") ? fileVal : undefined;
+	const fileLabel = sourceFile ? sourceFile.split("/").pop() : fileVal;
+
+	const rest = meta.replace(
+		/\b(?:title|file|region)=(?:"[^"]*"|'[^']*')/g,
+		" ",
+	);
 
 	const titleParts: string[] = [];
 	for (const token of rest.trim().split(/\s+/)) {
@@ -175,9 +200,16 @@ function parseCodeMeta(meta: string | undefined) {
 	}
 
 	const parsedTitle =
-		attrTitle ?? (titleParts.length > 0 ? titleParts.join(" ") : undefined);
+		titleVal ??
+		fileLabel ??
+		(titleParts.length > 0 ? titleParts.join(" ") : undefined);
 
-	return { title: parsedTitle, hide: parsedHide, nocheck: parsedNocheck };
+	return {
+		title: parsedTitle,
+		hide: parsedHide,
+		nocheck: parsedNocheck,
+		sourceFile,
+	};
 }
 
 function normalizeClassNames(value: unknown): string[] {
@@ -193,6 +225,7 @@ function normalizeClassNames(value: unknown): string[] {
 export const pre = ({
 	children,
 	file,
+	sourceFile,
 	language,
 	title,
 	isInGroup,
@@ -229,6 +262,10 @@ export const pre = ({
 	}
 	const resolvedTitle = title ?? parsedMeta.title;
 	const resolvedHide = hide ?? parsedMeta.hide;
+	const resolvedSourceFile = sourceFile ?? parsedMeta.sourceFile;
+	const sourceUrl = resolvedSourceFile
+		? sourceFileUrl(resolvedSourceFile)
+		: undefined;
 
 	// Calculate display name for tabs
 	const displayName =
@@ -253,7 +290,21 @@ export const pre = ({
 			<span data-code-icon className="hidden">
 				<Icon icon={langIcon} className="size-3" />
 			</span>
-			<div className="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover/code:opacity-100">
+			<div className="absolute right-2 top-2 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover/code:opacity-100">
+				{sourceUrl ? (
+					<TooltipProvider>
+						<WithTooltip
+							trigger={
+								<a href={sourceUrl} target="_blank" rel="noreferrer">
+									<Button size="icon-sm" variant="ghost" className="hover:bg-neutral-700/80">
+										<Icon icon={faArrowUpRightFromSquare} />
+									</Button>
+								</a>
+							}
+							content="View source on GitHub"
+						/>
+					</TooltipProvider>
+				) : null}
 				<TooltipProvider>
 					<WithTooltip
 						trigger={

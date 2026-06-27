@@ -71,16 +71,28 @@ function rehypeParseCodeBlocks() {
 					}
 
 					// Format: {title}? @nocheck? @hide?, plus Starlight-style
-					// attributes title="server.ts" / file="server.ts" (extract the
-					// value, not the literal `title="..."` token).
-					const attrMatch = trimmed.match(
-						/\b(?:title|file)=(?:"([^"]*)"|'([^']*)')/,
+					// attributes title="server.ts" / file="…". A `file=` with a
+					// slash is an EMBED path (inlined by remark-embed-code) — show
+					// its basename and expose the path so Code can link to source.
+					const fileMatch = trimmed.match(
+						/\bfile=(?:"([^"]*)"|'([^']*)')/,
 					);
-					const attrTitle = attrMatch
-						? (attrMatch[1] ?? attrMatch[2])
+					const fileVal = fileMatch
+						? (fileMatch[1] ?? fileMatch[2])
 						: undefined;
+					const titleMatch = trimmed.match(
+						/\btitle=(?:"([^"]*)"|'([^']*)')/,
+					);
+					const titleVal = titleMatch
+						? (titleMatch[1] ?? titleMatch[2])
+						: undefined;
+					const sourceFile =
+						fileVal && fileVal.includes("/") ? fileVal : undefined;
+					const fileLabel = sourceFile
+						? sourceFile.split("/").pop()
+						: fileVal;
 					const rest = trimmed.replace(
-						/\b(?:title|file)=(?:"[^"]*"|'[^']*')/g,
+						/\b(?:title|file|region)=(?:"[^"]*"|'[^']*')/g,
 						" ",
 					);
 
@@ -98,10 +110,14 @@ function rehypeParseCodeBlocks() {
 					}
 
 					const resolvedTitle =
-						attrTitle ??
+						titleVal ??
+						fileLabel ??
 						(titleParts.length > 0 ? titleParts.join(" ") : undefined);
 					if (resolvedTitle) {
 						parentNode.properties.title = resolvedTitle;
+					}
+					if (sourceFile) {
+						parentNode.properties.sourceFile = sourceFile;
 					}
 				}
 			}

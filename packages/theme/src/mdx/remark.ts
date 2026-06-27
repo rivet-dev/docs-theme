@@ -2,6 +2,7 @@ import { mdxAnnotations } from "mdx-annotations";
 import remarkGfm from "remark-gfm";
 import { execSync } from "child_process";
 import { visit } from "unist-util-visit";
+import { remarkEmbedCodeFiles } from "./remark-embed-code";
 
 // Remark plugin to add last modified time from git history
 function remarkModifiedTime() {
@@ -57,6 +58,9 @@ function remarkCodeFenceMetaToAnnotation() {
 }
 
 export const remarkPlugins = [
+	// Inline example files into `file="…"` fences before anything else reads the
+	// fence body, so the embedded source flows through the normal Shiki pipeline.
+	remarkEmbedCodeFiles,
 	mdxAnnotations.remark,
 	remarkCodeFenceMetaToAnnotation,
 	remarkGfm,
