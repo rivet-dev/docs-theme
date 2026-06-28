@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { Header } from '../components/v2/Header';
+import config from 'virtual:rivet-docs/config';
 import type { SidebarItem } from '../lib/sitemap';
 
 interface Props {
@@ -12,12 +13,19 @@ interface Props {
 
 const { title, description, canonicalUrl, sidebar } = Astro.props;
 const pathname = Astro.url.pathname;
+
+// The header includes the secondary tab strip ONLY when there are 2+ tabs
+// (see DocsTabs). With the strip the chrome is 8.0625rem; without it the header
+// is 4.5625rem. --header-height drives the sticky sidebar top + min-h-content,
+// so it must match what's actually rendered or the sidebar sits too low.
+const hasTabStrip = ((config as { tabs?: unknown[] })?.tabs?.length ?? 0) > 1;
+const headerHeight = hasTabStrip ? '8.0625rem' : '4.5625rem';
 ---
 
 <BaseLayout title={title} description={description} canonicalUrl={canonicalUrl} themeColor="#EFEFEF">
 	<Header variant="full-width" showDocsTabs={true} light={true} active="docs" sidebarData={sidebar} initialPathname={pathname} client:load />
 	<div class="paper-grain selection-paper w-full relative z-10 font-sans">
-		<div class="mx-auto w-full min-h-content flex flex-col md:grid md:grid-cols-docs" style="--header-height: 8.0625rem;">
+		<div class="mx-auto w-full min-h-content flex flex-col md:grid md:grid-cols-docs" style={`--header-height: ${headerHeight};`}>
 			<slot />
 		</div>
 	</div>
