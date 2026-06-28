@@ -301,7 +301,7 @@ export const pre = ({
 						<Button
 							size="sm"
 							variant="ghost"
-							className="h-7 gap-1.5 px-2 text-xs text-cream/70 hover:bg-neutral-700/80 hover:text-cream"
+							className="h-7 gap-1.5 px-2 text-xs text-cream/90 !bg-neutral-800/90 border border-cream/10 backdrop-blur-sm hover:!bg-neutral-700 hover:text-cream"
 						>
 							<Icon icon={faGithub} className="size-3.5" />
 							Full Example
@@ -313,7 +313,7 @@ export const pre = ({
 						size="sm"
 						variant="ghost"
 						data-copy-code
-						className="h-7 gap-1.5 px-2 text-xs text-cream/70 hover:bg-neutral-700/80 hover:text-cream"
+						className="h-7 gap-1.5 px-2 text-xs text-cream/90 !bg-neutral-800/90 border border-cream/10 backdrop-blur-sm hover:!bg-neutral-700 hover:text-cream"
 					>
 						<Icon icon={faCopy} className="size-3.5" />
 						Copy
