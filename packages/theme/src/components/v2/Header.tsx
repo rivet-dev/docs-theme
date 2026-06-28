@@ -669,8 +669,8 @@ function DocsMobileNavigation({
 					<>
 						<div className="border-t-2 border-ink/10 my-2" />
 
-						{/* Section dropdown */}
-						{sections.length > 0 && (
+						{/* Section dropdown (only with 2+ tabs) */}
+						{sections.length > 1 && (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button
@@ -772,8 +772,8 @@ function DocsMobileNavigation({
 				<>
 					<div className="border-t-2 border-white/10 my-2" />
 
-					{/* Section dropdown */}
-					{sections.length > 0 && (
+					{/* Section dropdown (only with 2+ tabs) */}
+					{sections.length > 1 && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button

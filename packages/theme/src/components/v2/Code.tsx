@@ -292,11 +292,10 @@ export const pre = ({
 			<span data-code-icon className="hidden">
 				<Icon icon={langIcon} className="size-3" />
 			</span>
-			<div className="absolute right-2 top-2 z-10 flex items-center gap-1">
-				{/* Auto-generated "Full Example" link to the example's directory on
-				    GitHub (replaces the old manual *[See Full Example]* markdown).
-				    Always visible (it's a real navigation affordance), to the LEFT
-				    of the hover-only copy button. */}
+			{/* Hover toolbar: matching text+icon buttons. "Full Example" (auto-
+			    generated link to the example's directory on GitHub, replacing the
+			    old manual *[See Full Example]* markdown) sits to the LEFT of Copy. */}
+			<div className="absolute right-2 top-2 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover/code:opacity-100">
 				{exampleUrl ? (
 					<a href={exampleUrl} target="_blank" rel="noreferrer" data-full-example>
 						<Button
@@ -309,20 +308,17 @@ export const pre = ({
 						</Button>
 					</a>
 				) : null}
-				<span className="opacity-0 transition-opacity group-hover/code:opacity-100">
-					<TooltipProvider>
-						<WithTooltip
-							trigger={
-								<CopyCodeTrigger>
-									<Button size="icon-sm" variant="ghost" data-copy-code className="hover:bg-neutral-700/80">
-										<Icon icon={faCopy} />
-									</Button>
-								</CopyCodeTrigger>
-							}
-							content="Copy code"
-						/>
-					</TooltipProvider>
-				</span>
+				<CopyCodeTrigger>
+					<Button
+						size="sm"
+						variant="ghost"
+						data-copy-code
+						className="h-7 gap-1.5 px-2 text-xs text-cream/70 hover:bg-neutral-700/80 hover:text-cream"
+					>
+						<Icon icon={faCopy} className="size-3.5" />
+						Copy
+					</Button>
+				</CopyCodeTrigger>
 			</div>
 
 			<div className="bg-neutral-950 text-sm overflow-x-auto">

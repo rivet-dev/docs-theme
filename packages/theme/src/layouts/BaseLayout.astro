@@ -159,7 +159,7 @@ const jsonLd = {
 			Skip to main content
 		</a>
 		<TooltipProvider client:load>
-			<Providers client:load>
+			<Providers client:load posthogKey={analytics.posthogKey}>
 				<slot />
 			</Providers>
 		</TooltipProvider>

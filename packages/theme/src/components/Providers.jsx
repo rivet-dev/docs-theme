@@ -43,12 +43,15 @@ function CopyCodeListener() {
 	return null;
 }
 
-function PostHogInit() {
+function PostHogInit({ posthogKey }) {
 	useEffect(() => {
+		// PostHog is config-driven: only initialize when the consumer's SiteConfig
+		// provides `analytics.posthogKey`. The host is the shared Rivet instance.
+		if (!posthogKey) return;
 		// Initialize PostHog on client only
 		import("posthog-js").then(({ default: posthog }) => {
 			if (!posthog.__loaded) {
-				posthog.init("phc_6kfTNEAVw7rn1LA51cO3D69FefbKupSWFaM7OUgEpEo", {
+				posthog.init(posthogKey, {
 					api_host: "https://ph.rivet.gg",
 					loaded: (posthog) => {
 						if (process.env.NODE_ENV === "development") posthog.debug();
@@ -56,16 +59,16 @@ function PostHogInit() {
 				});
 			}
 		});
-	}, []);
+	}, [posthogKey]);
 
 	return null;
 }
 
-export function Providers({ children }) {
+export function Providers({ children, posthogKey }) {
 	return (
 		<NavigationStateProvider>
 			{children}
-			<PostHogInit />
+			<PostHogInit posthogKey={posthogKey} />
 			<Suspense fallback={null}>
 				<PageViewTracker />
 			</Suspense>

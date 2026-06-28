@@ -14,19 +14,25 @@
 		"./lib/*": "./src/lib/*",
 		"./sitemap": "./src/lib/sitemap.ts",
 		"./styles/*": "./src/styles/*",
-		"./tailwind-preset": "./tailwind-preset.mjs"
+		"./tailwind-preset": "./tailwind-preset.mjs",
+		"./scripts/index-docs": "./scripts/index-docs.mjs"
+	},
+	"bin": {
+		"docs-theme-index": "./scripts/index-docs.mjs"
 	},
 	"files": [
 		"src",
 		"dist",
 		"fonts",
 		"assets",
+		"scripts",
 		"tailwind-preset.mjs",
 		"LICENSE",
 		"README.md"
 	],
 	"scripts": {
-		"build": "node build.mjs"
+		"build": "node build.mjs",
+		"index-docs": "node scripts/index-docs.mjs"
 	},
 	"devDependencies": {
 		"esbuild": "^0.25.9"

@@ -21,6 +21,10 @@ export function DocsTabs({
 	const normalizedPath = pathname.replace(/\/$/, "");
 	const tabs = config.tabs ?? [];
 
+	// A single tab is redundant with the product/Documentation link — only show
+	// the secondary tab strip when there are 2+ tabs to switch between.
+	if (tabs.length <= 1) return null;
+
 	return (
 		<div className="-mx-8 hidden h-14 items-center gap-4 bg-[#e9e9eb] px-8 empty:hidden md:flex">
 			{tabs.map((tab) => {
