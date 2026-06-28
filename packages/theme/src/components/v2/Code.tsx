@@ -7,7 +7,7 @@ import {
 } from "@rivet-gg/components";
 import config from "virtual:rivet-docs/config";
 import {
-	faArrowUpRightFromSquare,
+	faGithub,
 	faCode,
 	faCopy,
 	faDatabase,
@@ -140,11 +140,13 @@ interface PreProps {
 	className?: string | string[];
 }
 
-// Build a GitHub "view source" URL for an embedded example file from config.repo.
-function sourceFileUrl(path: string): string | undefined {
+// Build a GitHub "Full Example" URL — the DIRECTORY containing the embedded
+// example file (the full runnable example project) — from config.repo.
+function fullExampleUrl(path: string): string | undefined {
 	const repo = (config as { repo?: string } | undefined)?.repo;
 	if (!repo) return undefined;
-	return `https://github.com/${repo}/blob/main/${path.replace(/^\/+/, "")}`;
+	const dir = path.replace(/^\/+/, "").replace(/\/[^/]+$/, "");
+	return `https://github.com/${repo}/tree/main/${dir}`;
 }
 
 function looksLikeMermaid(code: string): boolean {
@@ -263,8 +265,8 @@ export const pre = ({
 	const resolvedTitle = title ?? parsedMeta.title;
 	const resolvedHide = hide ?? parsedMeta.hide;
 	const resolvedSourceFile = sourceFile ?? parsedMeta.sourceFile;
-	const sourceUrl = resolvedSourceFile
-		? sourceFileUrl(resolvedSourceFile)
+	const exampleUrl = resolvedSourceFile
+		? fullExampleUrl(resolvedSourceFile)
 		: undefined;
 
 	// Calculate display name for tabs
@@ -290,33 +292,37 @@ export const pre = ({
 			<span data-code-icon className="hidden">
 				<Icon icon={langIcon} className="size-3" />
 			</span>
-			<div className="absolute right-2 top-2 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover/code:opacity-100">
-				{sourceUrl ? (
+			<div className="absolute right-2 top-2 z-10 flex items-center gap-1">
+				{/* Auto-generated "Full Example" link to the example's directory on
+				    GitHub (replaces the old manual *[See Full Example]* markdown).
+				    Always visible (it's a real navigation affordance), to the LEFT
+				    of the hover-only copy button. */}
+				{exampleUrl ? (
+					<a href={exampleUrl} target="_blank" rel="noreferrer" data-full-example>
+						<Button
+							size="sm"
+							variant="ghost"
+							className="h-7 gap-1.5 px-2 text-xs text-cream/70 hover:bg-neutral-700/80 hover:text-cream"
+						>
+							<Icon icon={faGithub} className="size-3.5" />
+							Full Example
+						</Button>
+					</a>
+				) : null}
+				<span className="opacity-0 transition-opacity group-hover/code:opacity-100">
 					<TooltipProvider>
 						<WithTooltip
 							trigger={
-								<a href={sourceUrl} target="_blank" rel="noreferrer">
-									<Button size="icon-sm" variant="ghost" className="hover:bg-neutral-700/80">
-										<Icon icon={faArrowUpRightFromSquare} />
+								<CopyCodeTrigger>
+									<Button size="icon-sm" variant="ghost" data-copy-code className="hover:bg-neutral-700/80">
+										<Icon icon={faCopy} />
 									</Button>
-								</a>
+								</CopyCodeTrigger>
 							}
-							content="View source on GitHub"
+							content="Copy code"
 						/>
 					</TooltipProvider>
-				) : null}
-				<TooltipProvider>
-					<WithTooltip
-						trigger={
-							<CopyCodeTrigger>
-								<Button size="icon-sm" variant="ghost" data-copy-code className="hover:bg-neutral-700/80">
-									<Icon icon={faCopy} />
-								</Button>
-							</CopyCodeTrigger>
-						}
-						content="Copy code"
-					/>
-				</TooltipProvider>
+				</span>
 			</div>
 
 			<div className="bg-neutral-950 text-sm overflow-x-auto">

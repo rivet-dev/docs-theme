@@ -1,6 +1,11 @@
 packages:
   - "packages/theme"
-  - "example"
+  - "packages/theme/vendor/components"
+  - "packages/theme/vendor/icons"
+  # NOTE: the `example` app is intentionally NOT a workspace member here. It
+  # declares `react` and would install a second physical React into this repo;
+  # when agent-os consumes the theme via `link:`, React must come from the
+  # CONSUMER (peer) so there's exactly one instance. Run the example separately.
 allowBuilds:
   core-js: set this to true or false
   esbuild: set this to true or false
