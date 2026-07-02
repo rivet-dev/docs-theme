@@ -1,0 +1,1 @@
+import{r as e}from"./index.fuYhrp8s.js";import"./_commonjsHelpers.D6-XlEtG.js";function o(){return e.useEffect(()=>{new URLSearchParams(window.location.search).get("embed")==="true"&&document.querySelector("body > header")?.classList.add("hidden")},[]),null}export{o as EmbedDetector};

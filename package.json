@@ -1,6 +1,6 @@
 {
 	"name": "@rivet-dev/docs-theme",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Shared Astro docs framework for Rivet OSS projects (copied 1:1 from rivet.dev's docs platform).",
 	"license": "MIT",
 	"type": "module",
