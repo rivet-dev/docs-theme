@@ -1,95 +1,122 @@
-import type { AstroIntegration } from "astro";
-import type { StarlightUserConfig } from "@astrojs/starlight/types";
+/**
+ * SiteConfig — the consumer-supplied configuration for @rivet-dev/docs-theme.
+ * Passed to `docsTheme(siteConfig)` and exposed to components via the
+ * `virtual:rivet-docs/config` virtual module. Everything that was hardcoded to
+ * rivet.dev in the original platform is parameterized here.
+ */
+import type { Sitemap } from "./lib/sitemap";
 
 export interface NavItem {
-	/** Link text. */
-	label: string;
-	/** Destination URL (absolute path or external). */
-	href: string;
-	/** Pathname prefix that marks this item as the current page (e.g. `/docs`). */
-	match?: string;
+  label: string;
+  href: string;
+  /** Active-state prefix match (e.g. "/docs"). */
+  match?: string;
+  external?: boolean;
+  target?: string;
+}
+
+/** Product entries for the header "products" dropdown (optional). */
+export interface ProductItem {
+  label: string;
+  href: string;
+  logo?: string;
+  description?: string;
+  external?: boolean;
 }
 
 export interface CallToAction {
-	label: string;
-	href: string;
+  label: string;
+  href: string;
 }
 
-export interface LandingCard {
-	title: string;
-	href: string;
-	/** Icon key from the shared catalog (e.g. `rocket`, `terminal`, `book`). */
-	icon: string;
-	description: string;
-	badge?: string;
+export interface FooterLink {
+  name: string;
+  href: string;
+  target?: string;
 }
 
-export interface Landing {
-	title: string;
-	subtitle: string;
-	cards: LandingCard[];
+export interface FooterConfig {
+  /** Named columns of links, e.g. { Product: [...], Resources: [...] }. */
+  columns?: Record<string, FooterLink[]>;
+  /** Social icon links (icon key + href). */
+  social?: { icon: string; href: string; label?: string }[];
+  /** Small print / copyright line. */
+  copyright?: string;
+}
+
+export interface SearchConfig {
+  /** Hosted Typesense connection (search-only key is safe to ship). */
+  typesense?: {
+    host: string;
+    port?: number;
+    protocol?: string;
+    searchApiKey: string;
+    collectionName: string;
+  };
+}
+
+export interface FaviconConfig {
+  svg?: string;
+  icon16?: string;
+  icon32?: string;
+  appleTouchIcon?: string;
+  manifest?: string;
+}
+
+export interface OrganizationConfig {
+  name?: string;
+  url?: string;
+  logo?: string;
+  email?: string;
+  sameAs?: string[];
+}
+
+export interface AnalyticsConfig {
+  posthogKey?: string;
+  gaId?: string;
+  ahrefsKey?: string;
 }
 
 export interface SiteConfig {
-	/** Product name — document title and the header wordmark fallback text. */
-	product: string;
-	/** Optional wordmark image URL shown beside the Rivet mark instead of text. */
-	productLogo?: string;
-	/** Header product link target. Defaults to `/`. */
-	productHome?: string;
-	/** Favicon path. Defaults to `/favicon.svg`. */
-	favicon?: string;
-	/** `owner/name` — derives the GitHub social link, stars widget, and edit links. */
-	repo?: string;
-	/** Default branch for edit links. Defaults to `main`. */
-	branch?: string;
-	/** Sub-path prefix for edit links (e.g. `website/`). Defaults to empty. */
-	editPath?: string;
-	/** Primary header navigation links. */
-	topNav?: NavItem[];
-	/** Header call-to-action button. */
-	cta?: CallToAction;
-	/** Social links. `github` is derived from `repo` when omitted. */
-	social?: { discord?: string; github?: string };
-	/** Sidebar tree, passed through to Starlight. */
-	sidebar: StarlightUserConfig["sidebar"];
-	/**
-	 * Optional icons for sidebar GROUP labels, keyed by the group's label.
-	 * Starlight drops `attrs` on group entries (only links keep them), so group
-	 * icons cannot ride `sidebar[].attrs`; declare them here instead. Values are
-	 * keys from the shared theme icon catalog (same set as a leaf's
-	 * `attrs['data-icon']`), e.g. `{ Agents: "bot" }`.
-	 */
-	sidebarGroupIcons?: Record<string, string>;
-	/** Docs landing hero + card grid (rendered by the shared DocsLanding). */
-	landing?: Landing;
-	/** Analytics. PostHog host is fixed to the shared Rivet instance. */
-	analytics?: { posthogKey?: string };
+  /** Product / site name (used in titles, og:site_name, schema). */
+  product: string;
+  /** Logo image URL/path shown in the header. */
+  productLogo?: string;
+  /** Where the logo links to (default "/"). */
+  productHome?: string;
+  /** Canonical site origin, e.g. "https://agentos-sdk.dev". */
+  siteUrl?: string;
+  /** Default meta description. */
+  description?: string;
+  /** Default OG image URL. */
+  ogImage?: string;
+  themeColor?: string;
 
-	// --- Escape hatches for diverse OSS consumers ---
-	/** Extra Starlight config, deep-merged onto the generated config. */
-	starlight?: Partial<StarlightUserConfig>;
-	/** Extra CSS module specifiers, appended after the theme stylesheet. */
-	css?: string[];
-	/** Override any Starlight component slot with your own. */
-	components?: StarlightUserConfig["components"];
+  /** GitHub "owner/repo" for edit links. */
+  repo?: string;
+  /** Path prefix within the repo for edit links. */
+  editPath?: string;
+
+  /** Top navigation (right side of header). */
+  topNav?: NavItem[];
+  /** In-docs tab strip (Documentation / Cookbooks / ...). */
+  tabs?: NavItem[];
+  /** Optional products dropdown. */
+  products?: ProductItem[];
+  /** Primary CTA button. */
+  cta?: CallToAction;
+
+  /** The docs navigation tree. */
+  sitemap?: Sitemap;
+
+  social?: { discord?: string; github?: string; twitter?: string; [k: string]: string | undefined };
+  favicon?: FaviconConfig;
+  organization?: OrganizationConfig;
+  analytics?: AnalyticsConfig;
+  search?: SearchConfig;
 }
 
-type StarlightFactory = (config: any) => AstroIntegration;
-
-/**
- * Build the docs-theme integrations for an Astro project. Spread into
- * `integrations` in `astro.config.mjs`. Pass the `starlight` integration
- * factory (imported in the consumer's config) as the first argument; Starlight
- * ships TypeScript source, so importing it must stay on the consumer side.
- *
- *   import starlight from "@astrojs/starlight";
- *   import { docsTheme } from "@rivet-dev/docs-theme";
- *   integrations: [react(), tailwind(), ...docsTheme(starlight, siteConfig)]
- */
-export function docsTheme(starlight: StarlightFactory, config: SiteConfig): AstroIntegration[];
-
-/** The companion integration alone (exposes the SiteConfig virtual module). */
-export function docsThemeIntegration(config: SiteConfig): AstroIntegration;
-
-export default docsTheme;
+declare module "virtual:rivet-docs/config" {
+  const config: SiteConfig;
+  export default config;
+}

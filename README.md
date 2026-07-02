@@ -114,6 +114,80 @@ come from Font Awesome's own registry and need a Pro license. To pull them in:
 3. Add the Pro/kit package to `dependencies` in `package.json`, `pnpm install`,
    then import the glyph in `src/icons.mjs` exactly like the free ones.
 
+## Docs search (Typesense)
+
+The theme ships a hosted-Typesense search UI (`src/components/v2/TypesenseSearch.tsx`)
+plus a standalone indexer (`scripts/index-docs.mjs`) that populates the collection
+it reads. Consumers configure the **search-only** (client) side in `docs.config.mjs`
+and run the indexer with the **admin/populate** key from the environment (never
+committed).
+
+### Config shape (`docs.config.mjs`)
+
+The search-only key is safe to ship client-side:
+
+```js
+export const siteConfig = {
+  // ...
+  search: {
+    typesense: {
+      host: "xxxxx.a1.typesense.net",
+      port: 443,            // optional, defaults to 443
+      protocol: "https",    // optional, defaults to https
+      searchApiKey: "<search-only key>",
+      collectionName: "my-docs",
+    },
+  },
+};
+```
+
+### Indexer environment variables
+
+`scripts/index-docs.mjs` reads everything from env so the admin key never lands in
+a committed file:
+
+| Var | Required | Default | Meaning |
+| --- | --- | --- | --- |
+| `TYPESENSE_HOST` | yes | — | cluster host (skips gracefully if missing) |
+| `TYPESENSE_PORT` | no | `443` | cluster port |
+| `TYPESENSE_PROTOCOL` | no | `https` | `http`/`https` |
+| `TYPESENSE_API_KEY` | yes | — | **admin/populate** key (skips gracefully if missing) |
+| `TYPESENSE_COLLECTION_NAME` | yes | — | collection to create/update + upsert into |
+| `DOCS_DIR` | no | cwd | website dir to index from |
+| `DOCS_SITE_URL` | no | `""` | optional origin prefixed onto each doc URL |
+
+It creates-or-updates the collection (retrieve → update, recreate on schema
+mismatch), then upserts every doc in batches. Documents carry `id, title, content,
+url, hierarchy.lvl0/lvl1/lvl2` — the exact fields the search UI queries. URLs are
+sourced from `${DOCS_DIR}/src/content/docs/**/*.{md,mdx}` (route id == path relative
+to `src/content/docs`, e.g. `docs/quickstart.mdx` → `/docs/quickstart`), falling
+back to the theme-emitted `public/docs/**.md` if no sources are present. If the host
+or API key is missing it logs and exits 0.
+
+### Populate command
+
+Each consumer website wires a `docs:index` script that invokes the theme indexer:
+
+```jsonc
+// website/package.json
+"scripts": {
+  "docs:index": "node --input-type=module -e \"import('@rivet-dev/docs-theme/scripts/index-docs').then(m => m.indexDocs())\""
+}
+```
+
+Run it with the admin key supplied out of band:
+
+```sh
+TYPESENSE_HOST=xxxxx.a1.typesense.net \
+TYPESENSE_API_KEY=<admin key> \
+TYPESENSE_COLLECTION_NAME=my-docs \
+DOCS_DIR=$PWD \
+pnpm --filter ./website run docs:index
+```
+
+The indexer is also exposed directly as the `docs-theme-index` bin and importable
+as `import { indexDocs } from "@rivet-dev/docs-theme/scripts/index-docs"`.
+
 ## License
 
 MIT

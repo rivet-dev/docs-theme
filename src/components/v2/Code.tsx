@@ -1,0 +1,410 @@
+import {
+	Button,
+	cn,
+	ScrollArea,
+	TooltipProvider,
+	WithTooltip,
+} from "@rivet-gg/components";
+import config from "virtual:rivet-docs/config";
+import {
+	faGithub,
+	faCode,
+	faCopy,
+	faDatabase,
+	faDocker,
+	faFile,
+	faGear,
+	faGolang,
+	faJs,
+	faPhp,
+	faPython,
+	faRust,
+	faSwift,
+	faTerminal,
+	faTypescript,
+	Icon,
+} from "@rivet-gg/icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import escapeHTML from "escape-html";
+import { cloneElement, type ReactElement, type ReactNode } from "react";
+import { CopyCodeTrigger } from "./CopyCodeButton";
+
+const languageNames: Record<string, string> = {
+	csharp: "C#",
+	cpp: "C++",
+	go: "Go",
+	js: "JavaScript",
+	json: "JSON",
+	php: "PHP",
+	python: "Python",
+	ruby: "Ruby",
+	ts: "TypeScript",
+	typescript: "TypeScript",
+	sql: "SQL",
+	yaml: "YAML",
+	gdscript: "GDScript",
+	powershell: "Command Line",
+	dockerfile: "Dockerfile",
+	ini: "Configuration",
+	ps1: "Command Line",
+	docker: "Docker",
+	http: "HTTP",
+	bash: "Command Line",
+	sh: "Command Line",
+	prisma: "Prisma",
+	rust: "Rust",
+};
+
+const languageIcons: Record<string, IconDefinition> = {
+	js: faJs,
+	ts: faTypescript,
+	typescript: faTypescript,
+	python: faPython,
+	php: faPhp,
+	rust: faRust,
+	go: faGolang,
+	docker: faDocker,
+	dockerfile: faDocker,
+	swift: faSwift,
+	bash: faTerminal,
+	sh: faTerminal,
+	ps1: faTerminal,
+	powershell: faTerminal,
+	sql: faDatabase,
+	ini: faGear,
+};
+
+interface CodeGroupProps {
+	className?: string;
+	children: ReactNode;
+	/** Marks this code group as a workspace for type-checking multi-file examples. */
+	workspace?: boolean;
+	/** Display all code blocks stacked vertically instead of as tabs. */
+	stacked?: boolean;
+}
+
+export function CodeGroup({ children, className, stacked }: CodeGroupProps) {
+	if (stacked) {
+		return (
+			<div
+				className={cn("code-group group my-4", className)}
+				data-code-group-container
+				data-code-group-stacked
+			>
+				<div data-code-group-stacked-content className="flex flex-col gap-4">
+					{/* Code blocks moved here by TabsScript.astro */}
+				</div>
+				<div data-code-group-source className="hidden">
+					{children}
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div
+			className={cn("code-group group my-4 overflow-hidden rounded-xl border border-cream/10", className)}
+			data-code-group-container
+			data-code-group-workspace
+		>
+			<div className="flex min-h-[200px] gap-2" data-code-group-body>
+				<div
+					data-code-group-sidebar
+					className="flex flex-col w-[160px] shrink-0 py-2 overflow-y-auto"
+				>
+					{/* File tree items populated by TabsScript.astro */}
+				</div>
+				<div data-code-group-content-container className="flex-1 min-w-0">
+					{/* Content is moved here by TabsScript.astro */}
+				</div>
+			</div>
+			<div data-code-group-source className="hidden">
+				{children}
+			</div>
+		</div>
+	);
+}
+
+interface PreProps {
+	file?: string;
+	title?: string;
+	/** Repo-relative path of an embedded example file; renders a source link. */
+	sourceFile?: string;
+	language?: keyof typeof languageNames | string;
+	isInGroup?: boolean;
+	children?: ReactElement;
+	code?: string;
+	highlightedCode?: string;
+	flush?: boolean;
+	hide?: boolean;
+	className?: string | string[];
+}
+
+// Build a GitHub "Full Example" URL — the DIRECTORY containing the embedded
+// example file (the full runnable example project) — from config.repo.
+function fullExampleUrl(path: string): string | undefined {
+	const repo = (config as { repo?: string } | undefined)?.repo;
+	if (!repo) return undefined;
+	const dir = path.replace(/^\/+/, "").replace(/\/[^/]+$/, "");
+	return `https://github.com/${repo}/tree/main/${dir}`;
+}
+
+function looksLikeMermaid(code: string): boolean {
+	const firstLine = code
+		.split("\n")
+		.map((line) => line.trim())
+		.find((line) => line.length > 0);
+	if (!firstLine) return false;
+
+	return /^(sequenceDiagram|flowchart|graph|classDiagram|stateDiagram|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|quadrantChart|requirementDiagram|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment)\b/.test(
+		firstLine,
+	);
+}
+
+function parseCodeMeta(meta: string | undefined) {
+	if (!meta) {
+		return {
+			title: undefined as string | undefined,
+			hide: false,
+			nocheck: false,
+			sourceFile: undefined as string | undefined,
+		};
+	}
+
+	let parsedHide = false;
+	let parsedNocheck = false;
+
+	// Starlight-style attributes: `title="server.ts"` / `file="..."`. A `file=`
+	// with a slash is an EMBED path (rendered by remark-embed-code from a real
+	// example file) — show its basename and expose the path for a source link.
+	// A bare `file="server.ts"` (no slash) stays a plain title label.
+	const fileMatch = meta.match(/\bfile=(?:"([^"]*)"|'([^']*)')/);
+	const fileVal = fileMatch ? (fileMatch[1] ?? fileMatch[2]) : undefined;
+	const titleMatch = meta.match(/\btitle=(?:"([^"]*)"|'([^']*)')/);
+	const titleVal = titleMatch ? (titleMatch[1] ?? titleMatch[2]) : undefined;
+	const sourceFile = fileVal && fileVal.includes("/") ? fileVal : undefined;
+	const fileLabel = sourceFile ? sourceFile.split("/").pop() : fileVal;
+
+	const rest = meta.replace(
+		/\b(?:title|file|region)=(?:"[^"]*"|'[^']*')/g,
+		" ",
+	);
+
+	const titleParts: string[] = [];
+	for (const token of rest.trim().split(/\s+/)) {
+		if (token === "@hide") {
+			parsedHide = true;
+		} else if (token === "@nocheck") {
+			parsedNocheck = true;
+		} else if (token && !token.startsWith("@")) {
+			titleParts.push(token);
+		}
+	}
+
+	const parsedTitle =
+		titleVal ??
+		fileLabel ??
+		(titleParts.length > 0 ? titleParts.join(" ") : undefined);
+
+	return {
+		title: parsedTitle,
+		hide: parsedHide,
+		nocheck: parsedNocheck,
+		sourceFile,
+	};
+}
+
+function normalizeClassNames(value: unknown): string[] {
+	if (typeof value === "string") {
+		return value.split(/\s+/).filter(Boolean);
+	}
+	if (Array.isArray(value)) {
+		return value.flatMap((entry) => normalizeClassNames(entry));
+	}
+	return [];
+}
+
+export const pre = ({
+	children,
+	file,
+	sourceFile,
+	language,
+	title,
+	isInGroup,
+	code,
+	highlightedCode,
+	flush,
+	hide,
+	className,
+}: PreProps) => {
+	const codeChild =
+		children && typeof children === "object" && "props" in children
+			? (children as ReactElement<{
+				metastring?: string;
+				meta?: string;
+				annotation?: string;
+				className?: string | string[];
+			  }>).props
+			: undefined;
+	const parsedMeta = parseCodeMeta(
+		codeChild?.metastring ?? codeChild?.meta ?? codeChild?.annotation,
+	);
+	const preClassNames = normalizeClassNames(className);
+	const codeClassNames = normalizeClassNames(codeChild?.className);
+	const sourceText =
+		typeof code === "string" ? code : (extractTextContent(children) ?? "");
+	const isMermaid =
+		language === "mermaid" ||
+		preClassNames.includes("mermaid") ||
+		codeClassNames.includes("mermaid") ||
+		codeClassNames.includes("language-mermaid") ||
+		looksLikeMermaid(sourceText);
+	if (isMermaid) {
+		return <pre className="mermaid">{sourceText}</pre>;
+	}
+	const resolvedTitle = title ?? parsedMeta.title;
+	const resolvedHide = hide ?? parsedMeta.hide;
+	const resolvedSourceFile = sourceFile ?? parsedMeta.sourceFile;
+	const exampleUrl = resolvedSourceFile
+		? fullExampleUrl(resolvedSourceFile)
+		: undefined;
+
+	// Calculate display name for tabs
+	const displayName =
+		resolvedTitle || languageNames[language as keyof typeof languageNames] || "Code";
+	// Calculate unique identifier for tab matching
+	const tabId = file || resolvedTitle || language || "text";
+
+	const langIcon = file ? faFile : (languageIcons[language as string] ?? faCode);
+
+	const codeBlock = (
+		<div
+			className={cn(
+				"not-prose group/code relative group-[.code-group]:my-0 group-[[data-code-group-workspace]]:border-none group-[[data-code-group-workspace]]:overflow-visible",
+				flush ? "" : "my-4 overflow-hidden rounded-xl border border-cream/10"
+			)}
+			data-code-block
+			data-code-title={displayName}
+			data-code-id={tabId}
+			data-code-hide={resolvedHide ? "true" : undefined}
+			data-code-lang={language || undefined}
+		>
+			<span data-code-icon className="hidden">
+				<Icon icon={langIcon} className="size-3" />
+			</span>
+			{/* Hover toolbar: matching text+icon buttons. "Full Example" (auto-
+			    generated link to the example's directory on GitHub, replacing the
+			    old manual *[See Full Example]* markdown) sits to the LEFT of Copy. */}
+			<div className="absolute right-2 top-2 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover/code:opacity-100">
+				{exampleUrl ? (
+					<a href={exampleUrl} target="_blank" rel="noreferrer" data-full-example>
+						<Button
+							size="sm"
+							variant="ghost"
+							className="h-7 gap-1.5 px-2 text-xs text-cream/90 !bg-neutral-800/90 border border-cream/10 backdrop-blur-sm hover:!bg-neutral-700 hover:text-cream"
+						>
+							<Icon icon={faGithub} className="size-3.5" />
+							Full Example
+						</Button>
+					</a>
+				) : null}
+				<CopyCodeTrigger>
+					<Button
+						size="sm"
+						variant="ghost"
+						data-copy-code
+						className="h-7 gap-1.5 px-2 text-xs text-cream/90 !bg-neutral-800/90 border border-cream/10 backdrop-blur-sm hover:!bg-neutral-700 hover:text-cream"
+					>
+						<Icon icon={faCopy} className="size-3.5" />
+						Copy
+					</Button>
+				</CopyCodeTrigger>
+			</div>
+
+			<div className="bg-neutral-950 text-sm overflow-x-auto">
+				<div className="p-4 w-fit min-w-full">
+					{highlightedCode ? (
+						<span
+							className="not-prose code [&_pre]:!bg-transparent [&_pre]:!m-0 [&_pre]:!p-0"
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: it's generated from shiki
+							dangerouslySetInnerHTML={{ __html: highlightedCode }}
+						/>
+					) : code ? (
+						<pre className="not-prose code whitespace-pre">{code}</pre>
+					) : children ? (
+						cloneElement(children, { escaped: true })
+					) : null}
+				</div>
+			</div>
+		</div>
+	);
+
+	return codeBlock;
+};
+
+export { pre as Code };
+
+// Helper to extract string content from children (handles Astro MDX quirks)
+function extractTextContent(children: unknown): string | null {
+	if (typeof children === 'string') {
+		return children;
+	}
+	if (children === null || children === undefined) {
+		return '';
+	}
+	if (Array.isArray(children)) {
+		const extracted = children.map(extractTextContent);
+		// If any child couldn't be extracted, return null
+		if (extracted.some(e => e === null)) return null;
+		return extracted.join('');
+	}
+	// If it's a React element with props.children or props.dangerouslySetInnerHTML
+	if (typeof children === 'object' && children !== null) {
+		const obj = children as Record<string, unknown>;
+		if ('props' in obj && typeof obj.props === 'object' && obj.props !== null) {
+			const props = obj.props as Record<string, unknown>;
+			if ('dangerouslySetInnerHTML' in props && typeof props.dangerouslySetInnerHTML === 'object') {
+				const html = props.dangerouslySetInnerHTML as { __html?: string };
+				if (html.__html) return html.__html;
+			}
+			if ('children' in props) {
+				return extractTextContent(props.children);
+			}
+		}
+		// Check for direct __html property
+		if ('__html' in obj && typeof obj.__html === 'string') {
+			return obj.__html;
+		}
+	}
+	// Return null to indicate extraction failed - will fall back to rendering children directly
+	return null;
+}
+
+export const code = ({ children, escaped }) => {
+	const textContent = extractTextContent(children);
+
+	// If we couldn't extract text content, render children directly
+	// This handles Astro MDX's compiled element format
+	if (textContent === null) {
+		if (escaped) {
+			return <span className="not-prose code">{children}</span>;
+		}
+		return <code>{children}</code>;
+	}
+
+	if (escaped) {
+		return (
+			<span
+				className="not-prose code"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: it's generated from markdown
+				dangerouslySetInnerHTML={{ __html: textContent }}
+			/>
+		);
+	}
+	return (
+		<code
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: it's generated from markdown
+			dangerouslySetInnerHTML={{ __html: escapeHTML(textContent) }}
+		/>
+	);
+};
